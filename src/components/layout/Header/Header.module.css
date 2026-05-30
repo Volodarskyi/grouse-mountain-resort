@@ -1,0 +1,129 @@
+.header {
+    height: 96px;
+    padding: 0 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-primary);
+}
+
+.logo {
+    color: var(--color-primary);
+    text-decoration: none;
+
+    font-size: 56px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.06em;
+}
+
+.logoDot {
+    color: var(--color-accent);
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.navLink {
+    color: var(--color-text-primary);
+    text-decoration: none;
+
+    font-size: 16px;
+    font-weight: 700;
+
+    transition:
+            color 0.2s ease,
+            transform 0.2s ease;
+}
+
+.navLink:hover {
+    color: var(--color-primary);
+    transform: translateY(-1px);
+}
+
+.languageSwitcher {
+    position: relative;
+
+    width: 104px;
+    height: 40px;
+    padding: 4px;
+
+    display: flex;
+    align-items: center;
+
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: var(--color-white);
+}
+
+.languageIndicator {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+
+    width: 46px;
+    height: 30px;
+
+    border-radius: 999px;
+    background: var(--color-primary);
+    box-shadow: 0 2px 8px rgba(33, 34, 67, 0.18);
+
+    transition: transform 0.25s ease;
+}
+
+.indicatorRight {
+    transform: translateX(46px);
+}
+
+.languageButton {
+    position: relative;
+    z-index: 1;
+
+    width: 46px;
+    height: 30px;
+
+    border: none;
+    background: transparent;
+    cursor: pointer;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    color: var(--color-text-secondary);
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+
+    transition: color 0.2s ease;
+}
+
+.activeText {
+    color: var(--color-white);
+}
+
+@media (max-width: 768px) {
+    .header {
+        height: 72px;
+        padding: 0 20px;
+    }
+
+    .logo {
+        font-size: 38px;
+    }
+
+    .nav {
+        gap: 12px;
+    }
+
+    .navLink {
+        font-size: 14px;
+    }
+}

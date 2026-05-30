@@ -1,0 +1,40 @@
+@import "../styles/tokens.css";
+
+:root {
+  /*--color-primary: #212243;*/
+  --color-primary: #820024;
+  /*--color-secondary: #f9423a;*/
+  --color-secondary: #414040;
+  --color-accent: #f2b90c;
+  --color-active: #2841cf;
+  --color-disabled: #dad8d8;
+
+  --color-white: #ffffff;
+
+  --color-background: rgba(248, 248, 248, 1);
+  --color-surface: #f7f7f7;
+
+  --color-text-primary: #171717;
+  --color-text-secondary: #b6aeae;
+
+  --color-border: #e5e5e5;
+
+  --font-primary: "Montserrat", Arial, Helvetica, sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-primary), sans-serif;
+}
