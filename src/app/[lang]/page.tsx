@@ -1,6 +1,15 @@
-import {HomePage} from "@/features/home/HomePage";
+import { HomePage } from "@/features/home/HomePage";
 
+type PageProps = {
+    params: Promise<{
+        lang: string;
+    }>;
+};
 
-export default function Page() {
-    return <HomePage />;
-}
+const Page = async ({ params }: PageProps) => {
+    const { lang } = await params;
+
+    return <HomePage lang={lang} />;
+};
+
+export default Page;

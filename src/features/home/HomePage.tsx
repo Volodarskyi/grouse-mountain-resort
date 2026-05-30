@@ -14,10 +14,7 @@ export const HomePage = ({ lang }: HomePageProps) => {
                 <h1 className="home-page__title">Home Page</h1>
 
                 <div className="home-page__links">
-                    <Link
-                        href={`/${lang}/training`}
-                        className="home-page__link-card"
-                    >
+                    <Link href={`/${lang}/training`} className="home-page__link-card">
                         <div className="home-page__icon-wrapper">
                             <Image
                                 src="/assets/icons/icon-chef.png"
@@ -29,10 +26,7 @@ export const HomePage = ({ lang }: HomePageProps) => {
                         </div>
 
                         <div className="home-page__content">
-                            <h2 className="home-page__card-title">
-                                Training
-                            </h2>
-
+                            <h2 className="home-page__card-title">Training</h2>
                             <p className="home-page__card-text">
                                 Practice recipes and menu knowledge.
                             </p>
