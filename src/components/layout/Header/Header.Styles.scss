@@ -88,5 +88,25 @@
     &__logo-image {
       height: 46px;
     }
+
+    &__logo-text {
+      display: flex;
+      flex-direction: column;
+
+      color: var(--color-white);
+
+      span:first-child {
+        font-size: 20px;
+        font-weight: 400;
+        line-height: 1;
+      }
+
+      span:last-child {
+        font-size: 20px;
+        font-weight: 400;
+        line-height: 1;
+      }
+    }
+
   }
 }

@@ -40,13 +40,17 @@ export function Header({ lang }: HeaderProps) {
                 aria-label="Grouse Mountain Resort"
             >
                 <Image
-                    src="/assets/logos/GMR_logo_white.png"
+                    src="/assets/logo/GMR_logo_white.png"
                     alt="Grouse Mountain Resort"
                     width={280}
                     height={90}
                     priority
                     className="header__logo-image"
                 />
+                <div className="header__logo-text">
+                    <span>Grouse</span>
+                    <span>Mountain</span>
+                </div>
             </Link>
 
             <div className="header__actions">

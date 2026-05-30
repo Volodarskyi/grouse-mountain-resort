@@ -1,12 +1,6 @@
-import type { Locale } from "@/i18n/config";
+import {HomePage} from "@/features/home/HomePage";
 
-type HomePageProps = {
-    params: Promise<{
-        lang: Locale;
-    }>;
-};
 
-export default async function HomePage({ params }: HomePageProps) {
-
-    return <div>Home Page</div>;
+export default function Page() {
+    return <HomePage />;
 }
