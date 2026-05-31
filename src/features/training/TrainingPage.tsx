@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
     Ingredient,
@@ -18,12 +18,16 @@ const getRandomRecipe = (): Recipe => {
 };
 
 export const TrainingPage = () => {
-    const [recipe, setRecipe] = useState<Recipe>(getRandomRecipe);
+    const [recipe, setRecipe] = useState<Recipe>(recipes[0]);
     const [selectedIngredients, setSelectedIngredients] = useState<Ingredient[]>([]);
     const [result, setResult] = useState("");
     const [showAnswer, setShowAnswer] = useState(false);
     const [missingIngredients, setMissingIngredients] = useState<string[]>([]);
     const [extraIngredients, setExtraIngredients] = useState<string[]>([]);
+
+    useEffect(() => {
+        setRecipe(getRandomRecipe());
+    }, []);
 
     const selectedNames = useMemo(
         () => selectedIngredients.map((item) => item.name),
@@ -78,42 +82,56 @@ export const TrainingPage = () => {
     return (
         <main className="training-page">
             <div className="training-page__header">
-                <span className="training-page__label">Build:</span>
+                <span className="training-page__label">Make:</span>
                 <h1 className="training-page__recipe-name">{recipe.title}</h1>
             </div>
 
             <section className="training-page__selected">
-                <h2 className="training-page__section-title">Selected Ingredients</h2>
+                <h2 className="training-page__section-title">Selected Items</h2>
 
-                <div className="training-page__burger-stack">
+                <div className="training-page__selection-tray">
                     {selectedIngredients.length === 0 ? (
-                        <p className="training-page__empty">Tap ingredients below</p>
+                        <div className="training-page__placeholder">
+                            <div className="training-page__placeholder-icon">+</div>
+
+                            <div className="training-page__placeholder-content">
+                                <p className="training-page__empty">Tap ingredients below</p>
+
+                                <div className="training-page__placeholder-lines">
+                                    <span />
+                                    <span />
+                                    <span />
+                                </div>
+                            </div>
+                        </div>
                     ) : (
-                        selectedIngredients.map((ingredient, index) => {
-                            const isExtra = extraIngredients.includes(ingredient.name);
+                        <div className="training-page__burger-stack">
+                            {selectedIngredients.map((ingredient, index) => {
+                                const isExtra = extraIngredients.includes(ingredient.name);
 
-                            return (
-                                <button
-                                    key={ingredient.name}
-                                    type="button"
-                                    onClick={() => handleSelectedIngredientClick(ingredient.name)}
-                                    className={`training-page__selected-layer ${
-                                        isExtra ? "training-page__selected-layer--wrong" : ""
-                                    }`}
-                                    style={{ zIndex: selectedIngredients.length - index }}
-                                >
-                                    <Image
-                                        src={ingredient.imgUrl}
-                                        alt={ingredient.name}
-                                        width={44}
-                                        height={44}
-                                        className="training-page__selected-image"
-                                    />
+                                return (
+                                    <button
+                                        key={ingredient.name}
+                                        type="button"
+                                        onClick={() => handleSelectedIngredientClick(ingredient.name)}
+                                        className={`training-page__selected-layer ${
+                                            isExtra ? "training-page__selected-layer--wrong" : ""
+                                        }`}
+                                        style={{ zIndex: selectedIngredients.length - index }}
+                                    >
+                                        <Image
+                                            src={ingredient.imgUrl}
+                                            alt={ingredient.name}
+                                            width={44}
+                                            height={44}
+                                            className="training-page__selected-image"
+                                        />
 
-                                    <span>{ingredient.name}</span>
-                                </button>
-                            );
-                        })
+                                        <span>{ingredient.name}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
                     )}
                 </div>
 
@@ -163,29 +181,21 @@ export const TrainingPage = () => {
                 </div>
             </section>
 
-            <div className="training-page__actions">
-                <button
-                    type="button"
-                    onClick={handleDone}
-                    className="training-page__button"
-                >
-                    Done
-                </button>
-
-                <button
-                    type="button"
-                    onClick={() => setShowAnswer((prev) => !prev)}
-                    className="training-page__button training-page__button--secondary"
-                >
-                    {showAnswer ? "Hide Answer" : "Show Answer"}
-                </button>
-
+            <div className="training-page__bottom-actions">
                 <button
                     type="button"
                     onClick={handleNextRecipe}
-                    className="training-page__button training-page__button--secondary"
+                    className="training-page__bottom-button training-page__bottom-button--secondary"
                 >
                     Next
+                </button>
+
+                <button
+                    type="button"
+                    onClick={handleDone}
+                    className="training-page__bottom-button"
+                >
+                    DONE
                 </button>
             </div>
 
@@ -197,10 +207,7 @@ export const TrainingPage = () => {
 
                     <div className="training-page__answer-list">
                         {recipe.ingredients.map((ingredient) => (
-                            <div
-                                key={ingredient.name}
-                                className="training-page__answer-item"
-                            >
+                            <div key={ingredient.name} className="training-page__answer-item">
                                 <Image
                                     src={ingredient.imgUrl}
                                     alt={ingredient.name}

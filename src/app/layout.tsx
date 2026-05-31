@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     title: "Grouse Mountain",
     description: "Restorator AI",
     icons: {
-        icon: "/favicon.png",
+        icon: "/GROUSE-FAVICON_800-round.png",
     },
 };
 
@@ -27,7 +27,7 @@ export default function RootLayout({
             className={montserrat.variable}
             suppressHydrationWarning
         >
-        <body>
+        <body suppressHydrationWarning>
         <Providers>{children}</Providers>
         </body>
         </html>
