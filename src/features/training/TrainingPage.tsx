@@ -8,7 +8,7 @@ import {
     Ingredient,
     Recipe,
     ingredients,
-    recipes,
+    recipes, ingredientSlideOrderByMenu, getIngredientsByCodes,
 } from "./data/trainingData";
 
 import "./TrainingPage.Styles.scss";
@@ -42,10 +42,20 @@ export const TrainingPage = () => {
         setRecipe(getRandomRecipe());
     }, []);
 
-    const ingredientSlides = useMemo(
-        () => chunkIngredients(ingredients, INGREDIENTS_PER_SLIDE),
-        []
-    );
+    const currentMenu = "RustyRail";
+
+    const ingredientSlides = useMemo(() => {
+        const orderedIngredients = getIngredientsByCodes(
+            ingredientSlideOrderByMenu[currentMenu]
+        );
+
+        return chunkIngredients(orderedIngredients, INGREDIENTS_PER_SLIDE);
+    }, []);
+
+    // const ingredientSlides = useMemo(
+    //     () => chunkIngredients(ingredients, INGREDIENTS_PER_SLIDE),
+    //     []
+    // );
 
     const selectedCodes = useMemo(
         () => selectedIngredients.map((item) => item.code),

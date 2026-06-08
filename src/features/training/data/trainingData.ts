@@ -102,6 +102,42 @@ const getIngredient = (code: string): Ingredient => {
     return ingredient;
 };
 
+export const ingredientSlideOrderByMenu = {
+    RustyRail: [
+        "ING_GRILLED_BRIOCHE_BUN_TOP",
+        "ING_GRILLED_BRIOCHE_BUN_BOTTOM",
+        "ING_BEEF_PATTY",
+        "ING_BEYOND_MEAT_PATTY",
+        "ING_GRILLED_CHICKEN_BREAST",
+        "ING_DOUBLE_BEEF_PATTY",
+        "ING_AMERICAN_CHEESE_SLICE",
+        "ING_CRISPY_BACON",
+        "ING_FRESH_LETTUCE",
+        "ING_PICKLES",
+        "ING_RED_ONION_RINGS",
+        "ING_GRILLED_ONION",
+        "ING_BANANA_PEPPERS",
+        "ING_PEAK_SAUCE",
+        "ING_BBQ_SAUCE",
+        "ING_MAYONNAISE",
+    ],
+
+    chicken: [
+        "ING_GRILLED_CHICKEN_BREAST",
+        "ING_FRESH_LETTUCE",
+        "ING_PICKLES",
+        "ING_RED_ONION_RINGS",
+        "ING_MAYONNAISE",
+        "ING_BBQ_SAUCE",
+        "ING_GRILLED_BRIOCHE_BUN_TOP",
+        "ING_GRILLED_BRIOCHE_BUN_BOTTOM",
+    ],
+} as const;
+
+export const getIngredientsByCodes = (codes: readonly string[]): Ingredient[] => {
+    return codes.map(getIngredient);
+};
+
 export const recipes: Recipe[] = [
     {
         title: "Single Track Smash",
