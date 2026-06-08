@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
+import { Carousel } from "antd";
 
 import {
     Ingredient,
@@ -12,9 +13,21 @@ import {
 
 import "./TrainingPage.Styles.scss";
 
+const INGREDIENTS_PER_SLIDE = 12;
+
 const getRandomRecipe = (): Recipe => {
     const index = Math.floor(Math.random() * recipes.length);
     return recipes[index];
+};
+
+const chunkIngredients = (items: Ingredient[], size: number): Ingredient[][] => {
+    const chunks: Ingredient[][] = [];
+
+    for (let i = 0; i < items.length; i += size) {
+        chunks.push(items.slice(i, i + size));
+    }
+
+    return chunks;
 };
 
 export const TrainingPage = () => {
@@ -28,6 +41,11 @@ export const TrainingPage = () => {
     useEffect(() => {
         setRecipe(getRandomRecipe());
     }, []);
+
+    const ingredientSlides = useMemo(
+        () => chunkIngredients(ingredients, INGREDIENTS_PER_SLIDE),
+        []
+    );
 
     const selectedCodes = useMemo(
         () => selectedIngredients.map((item) => item.code),
@@ -85,12 +103,10 @@ export const TrainingPage = () => {
         <main className="training-page">
             <div className="training-page__header">
                 <span className="training-page__label">Make:</span>
-                <h1 className="training-page__recipe-name">{recipe.title}</h1>
+                <span className="training-page__recipe-name">{recipe.title}</span>
             </div>
 
             <section className="training-page__selected">
-                {/*<h2 className="training-page__section-title">Selected Items</h2>*/}
-
                 <div className="training-page__selection-tray">
                     {selectedIngredients.length === 0 ? (
                         <div className="training-page__placeholder">
@@ -155,30 +171,46 @@ export const TrainingPage = () => {
             <section className="training-page__ingredients">
                 <h2 className="training-page__section-title">Ingredients</h2>
 
-                <div className="training-page__grid">
-                    {ingredients.map((ingredient) => {
-                        const isSelected = selectedCodes.includes(ingredient.code);
+                <Carousel
+                    dots
+                    draggable
+                    infinite={false}
+                    className="training-page__ingredients-carousel"
+                >
+                    {ingredientSlides.map((slide, slideIndex) => (
+                        <div
+                            key={`ingredient-slide-${slideIndex}`}
+                            className="training-page__slide"
+                        >
+                            <div className="training-page__grid">
+                                {slide.map((ingredient) => {
+                                    const isSelected = selectedCodes.includes(ingredient.code);
 
-                        return (
-                            <button
-                                key={ingredient.code}
-                                type="button"
-                                onClick={() => handleIngredientClick(ingredient)}
-                                className={`training-page__ingredient ${
-                                    isSelected ? "training-page__ingredient--active" : ""
-                                }`}
-                            >
-                                <Image
-                                    src={ingredient.imgUrl}
-                                    alt={ingredient.name}
-                                    width={72}
-                                    height={72}
-                                    className="training-page__ingredient-image"
-                                />
-                            </button>
-                        );
-                    })}
-                </div>
+                                    return (
+                                        <button
+                                            key={ingredient.code}
+                                            type="button"
+                                            onClick={() => handleIngredientClick(ingredient)}
+                                            className={`training-page__ingredient ${
+                                                isSelected
+                                                    ? "training-page__ingredient--active"
+                                                    : ""
+                                            }`}
+                                        >
+                                            <Image
+                                                src={ingredient.imgUrl}
+                                                alt={ingredient.name}
+                                                width={72}
+                                                height={72}
+                                                className="training-page__ingredient-image"
+                                            />
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    ))}
+                </Carousel>
             </section>
 
             <div className="training-page__bottom-actions">

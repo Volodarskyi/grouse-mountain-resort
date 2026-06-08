@@ -9,6 +9,7 @@
 
     //margin: 0 0 12px;
     //padding: 10px 0;
+    margin-bottom: 4px;
 
     display: flex;
     flex-direction: row;
@@ -20,7 +21,6 @@
 
   &__label {
     display: flex;
-    margin-bottom: 4px;
 
     font-size: 24px;
     font-weight: 700;
@@ -282,6 +282,12 @@
         background: rgba(255, 255, 255, 0.52);
       }
     }
+
+    &:focus,
+    &:focus-visible {
+      outline: none;
+      box-shadow: none;
+    }
   }
 
   &__ingredient-image {
@@ -341,6 +347,74 @@
     flex-shrink: 0;
 
     object-fit: contain;
+  }
+
+  &__ingredients-carousel {
+    position: relative;
+    padding-bottom: 34px;
+    overflow: visible;
+
+    .slick-list {
+      overflow: hidden;
+    }
+
+    .slick-track {
+      display: flex;
+    }
+
+    .slick-slide {
+      height: auto;
+    }
+
+    .slick-dots {
+      position: absolute !important;
+      left: 0;
+      right: 0;
+      bottom: 4px !important;
+
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+      gap: 8px !important;
+
+      margin: 0 !important;
+      padding: 0 !important;
+
+      li {
+        position: relative !important;
+
+        width: 40px !important;
+        height: 6px !important;
+        min-width: 40px !important;
+        max-width: 40px !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
+
+        button {
+          width: 40px !important;
+          height: 6px !important;
+          padding: 0 !important;
+          opacity: 0 !important;
+        }
+
+        &::after {
+          content: "" !important;
+
+          position: absolute;
+          inset: 0;
+
+          border-radius: 999px;
+          background: rgba(130, 0, 36, 0.35)!important;
+
+          pointer-events: none;
+        }
+
+        &.slick-active::after {
+          background: rgba(207, 44, 90, 1)!important;
+        }
+      }
+    }
   }
 
   &__bottom-actions {
