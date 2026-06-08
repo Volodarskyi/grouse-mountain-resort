@@ -29,38 +29,43 @@ export const TrainingPage = () => {
         setRecipe(getRandomRecipe());
     }, []);
 
-    const selectedNames = useMemo(
-        () => selectedIngredients.map((item) => item.name),
+    const selectedCodes = useMemo(
+        () => selectedIngredients.map((item) => item.code),
         [selectedIngredients]
     );
 
-    const handleIngredientClick = (ingredient: Ingredient) => {
-        if (selectedNames.includes(ingredient.name)) return;
-
-        setSelectedIngredients((prev) => [...prev, ingredient]);
+    const resetCheckState = () => {
         setResult("");
         setMissingIngredients([]);
         setExtraIngredients([]);
         setShowAnswer(false);
     };
 
-    const handleSelectedIngredientClick = (ingredientName: string) => {
-        setSelectedIngredients((prev) =>
-            prev.filter((item) => item.name !== ingredientName)
-        );
+    const handleIngredientClick = (ingredient: Ingredient) => {
+        setSelectedIngredients((prev) => {
+            const isSelected = prev.some((item) => item.code === ingredient.code);
 
-        setResult("");
-        setMissingIngredients([]);
-        setExtraIngredients([]);
-        setShowAnswer(false);
+            if (isSelected) {
+                return prev.filter((item) => item.code !== ingredient.code);
+            }
+
+            return [...prev, ingredient];
+        });
+
+        resetCheckState();
     };
 
     const handleDone = () => {
-        const recipeNames = recipe.ingredients.map((item) => item.name);
-        const currentNames = selectedIngredients.map((item) => item.name);
+        const recipeCodes = recipe.ingredients.map((item) => item.code);
+        const currentCodes = selectedIngredients.map((item) => item.code);
 
-        const missing = recipeNames.filter((name) => !currentNames.includes(name));
-        const extra = currentNames.filter((name) => !recipeNames.includes(name));
+        const missing = recipe.ingredients
+            .filter((item) => !currentCodes.includes(item.code))
+            .map((item) => item.name);
+
+        const extra = selectedIngredients
+            .filter((item) => !recipeCodes.includes(item.code))
+            .map((item) => item.name);
 
         setMissingIngredients(missing);
         setExtraIngredients(extra);
@@ -73,10 +78,7 @@ export const TrainingPage = () => {
     const handleNextRecipe = () => {
         setRecipe(getRandomRecipe());
         setSelectedIngredients([]);
-        setResult("");
-        setMissingIngredients([]);
-        setExtraIngredients([]);
-        setShowAnswer(false);
+        resetCheckState();
     };
 
     return (
@@ -87,7 +89,7 @@ export const TrainingPage = () => {
             </div>
 
             <section className="training-page__selected">
-                <h2 className="training-page__section-title">Selected Items</h2>
+                {/*<h2 className="training-page__section-title">Selected Items</h2>*/}
 
                 <div className="training-page__selection-tray">
                     {selectedIngredients.length === 0 ? (
@@ -110,10 +112,8 @@ export const TrainingPage = () => {
                                 const isExtra = extraIngredients.includes(ingredient.name);
 
                                 return (
-                                    <button
-                                        key={ingredient.name}
-                                        type="button"
-                                        onClick={() => handleSelectedIngredientClick(ingredient.name)}
+                                    <div
+                                        key={ingredient.code}
                                         className={`training-page__selected-layer ${
                                             isExtra ? "training-page__selected-layer--wrong" : ""
                                         }`}
@@ -128,7 +128,7 @@ export const TrainingPage = () => {
                                         />
 
                                         <span>{ingredient.name}</span>
-                                    </button>
+                                    </div>
                                 );
                             })}
                         </div>
@@ -157,11 +157,11 @@ export const TrainingPage = () => {
 
                 <div className="training-page__grid">
                     {ingredients.map((ingredient) => {
-                        const isSelected = selectedNames.includes(ingredient.name);
+                        const isSelected = selectedCodes.includes(ingredient.code);
 
                         return (
                             <button
-                                key={ingredient.name}
+                                key={ingredient.code}
                                 type="button"
                                 onClick={() => handleIngredientClick(ingredient)}
                                 className={`training-page__ingredient ${
@@ -207,7 +207,7 @@ export const TrainingPage = () => {
 
                     <div className="training-page__answer-list">
                         {recipe.ingredients.map((ingredient) => (
-                            <div key={ingredient.name} className="training-page__answer-item">
+                            <div key={ingredient.code} className="training-page__answer-item">
                                 <Image
                                     src={ingredient.imgUrl}
                                     alt={ingredient.name}
