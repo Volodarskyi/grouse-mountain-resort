@@ -7,15 +7,15 @@
     top: 0;
     z-index: 20;
 
-    margin: 0 0 12px;
-    padding: 10px 0;
+    //margin: 0 0 12px;
+    //padding: 10px 0;
 
     display: flex;
     flex-direction: row;
     align-items: center;
 
     background: var(--color-background);
-    border-bottom: 1px solid var(--color-border);
+    //border-bottom: 1px solid var(--color-border);
   }
 
   &__label {
@@ -140,7 +140,7 @@
   &__selected-layer {
     position: relative;
 
-    min-height: 52px;
+    //min-height: 52px;
     padding: 0;
     margin: 0;
 
@@ -189,14 +189,14 @@
   &__selected-image {
     flex-shrink: 0;
 
-    width: 44px;
-    height: 44px;
+    width: 42px;
+    height: 42px;
 
     object-fit: contain;
   }
 
   &__missing {
-    margin-top: 16px;
+    margin-top: 8px;
   }
 
   &__feedback-title {
@@ -406,7 +406,7 @@
     }
 
     &__selection-tray {
-      height: 410px;
+      height: 384px;
       padding: 4px;
 
       border: 2px dotted var(--color-primary);
