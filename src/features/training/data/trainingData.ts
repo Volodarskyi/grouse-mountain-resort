@@ -90,6 +90,91 @@ export const ingredients: Ingredient[] = [
         name: "Grilled Chicken Breast",
         imgUrl: "/assets/ingredients/GrilledChickenBreast.png",
     },
+    {
+        code: "ING_HOT_DOG_BUN",
+        name: "Hot Dog Bun",
+        imgUrl: "/assets/ingredients/HotDogBun.png",
+    },
+    {
+        code: "ING_ALL_BEEF_DOG",
+        name: "All Beef Dog",
+        imgUrl: "/assets/ingredients/AllBeefDog.png",
+    },
+    {
+        code: "ING_BRATWURST_SAUSAGE",
+        name: "Bratwurst Sausage",
+        imgUrl: "/assets/ingredients/BratwurstSausage.png",
+    },
+    {
+        code: "ING_SAUERKRAUT",
+        name: "Sauerkraut",
+        imgUrl: "/assets/ingredients/Sauerkraut.png",
+    },
+    {
+        code: "ING_CRISPY_ONION",
+        name: "Crispy Onion",
+        imgUrl: "/assets/ingredients/CrispyOnion.png",
+    },
+    {
+        code: "ING_CRUSHED_POTATO_CHIPS",
+        name: "Crushed Potato Chips",
+        imgUrl: "/assets/ingredients/CrushedPotatoChips.png",
+    },
+    {
+        code: "ING_BEER_MUSTARD",
+        name: "Beer Mustard",
+        imgUrl: "/assets/ingredients/BeerMustard.png",
+    },
+    {
+        code: "ING_KETCHUP",
+        name: "Ketchup",
+        imgUrl: "/assets/ingredients/Ketchup.png",
+    },
+    // {
+    //     code: "ING_CHOPPED_HERB_MARINATED_CHICKEN",
+    //     name: "Chopped Herb Marinated Chicken",
+    //     imgUrl: "/assets/ingredients/ChoppedHerbMarinatedChicken.png",
+    // },
+    {
+        code: "ING_ROMAINE_LETTUCE",
+        name: "Romaine Lettuce",
+        imgUrl: "/assets/ingredients/RomaineLettuce.png",
+    },
+    {
+        code: "ING_TOMATO",
+        name: "Tomato",
+        imgUrl: "/assets/ingredients/Tomato.png",
+    },
+    {
+        code: "ING_SWEET_CORN",
+        name: "Sweet Corn",
+        imgUrl: "/assets/ingredients/SweetCorn.png",
+    },
+    {
+        code: "ING_BLACK_BEANS",
+        name: "Black Beans",
+        imgUrl: "/assets/ingredients/BlackBeans.png",
+    },
+    {
+        code: "ING_PARMESAN_CHEESE",
+        name: "Parmesan Cheese",
+        imgUrl: "/assets/ingredients/ParmesanCheese.png",
+    },
+    {
+        code: "ING_CROUTONS",
+        name: "Croutons",
+        imgUrl: "/assets/ingredients/Croutons.png",
+    },
+    {
+        code: "ING_CHIPOTLE_LIME_DRESSING",
+        name: "Chipotle-Lime Dressing",
+        imgUrl: "/assets/ingredients/ChipotleLimeDressing.png",
+    },
+    {
+        code: "ING_CAESAR_DRESSING",
+        name: "Caesar Dressing",
+        imgUrl: "/assets/ingredients/CaesarDressing.png",
+    },
 ];
 
 const getIngredient = (code: string): Ingredient => {
@@ -120,6 +205,23 @@ export const ingredientSlideOrderByMenu = {
         "ING_PEAK_SAUCE",
         "ING_BBQ_SAUCE",
         "ING_MAYONNAISE",
+        "ING_HOT_DOG_BUN",
+        "ING_ALL_BEEF_DOG",
+        "ING_BRATWURST_SAUSAGE",
+        "ING_SAUERKRAUT",
+        "ING_CRISPY_ONION",
+        "ING_CRUSHED_POTATO_CHIPS",
+        "ING_BEER_MUSTARD",
+        "ING_KETCHUP",
+        // "ING_CHOPPED_HERB_MARINATED_CHICKEN",
+        "ING_ROMAINE_LETTUCE",
+        "ING_TOMATO",
+        "ING_SWEET_CORN",
+        "ING_BLACK_BEANS",
+        "ING_PARMESAN_CHEESE",
+        "ING_CROUTONS",
+        "ING_CHIPOTLE_LIME_DRESSING",
+        "ING_CAESAR_DRESSING",
     ],
 
     chicken: [
@@ -234,4 +336,59 @@ export const recipes: Recipe[] = [
             getIngredient("ING_GRILLED_BRIOCHE_BUN_TOP"),
         ],
     },
+
+    {
+        title: "The Grouse Grind Dog",
+        ingredients: [
+            getIngredient("ING_HOT_DOG_BUN"),
+            getIngredient("ING_ALL_BEEF_DOG"),
+            getIngredient("ING_BANANA_PEPPERS"),
+            getIngredient("ING_PEAK_SAUCE"),
+            getIngredient("ING_CRUSHED_POTATO_CHIPS"),
+        ],
+    },
+
+    {
+        title: "Bratwurst Bun",
+        ingredients: [
+            getIngredient("ING_HOT_DOG_BUN"),
+            getIngredient("ING_BRATWURST_SAUSAGE"),
+            getIngredient("ING_SAUERKRAUT"),
+            getIngredient("ING_BEER_MUSTARD"),
+            getIngredient("ING_CRISPY_ONION"),
+        ],
+    },
+
+    {
+        title: "The Peak Chicken Salad",
+        ingredients: [
+            getIngredient("ING_GRILLED_CHICKEN_BREAST"),
+            getIngredient("ING_ROMAINE_LETTUCE"),
+            getIngredient("ING_TOMATO"),
+            getIngredient("ING_SWEET_CORN"),
+            getIngredient("ING_BLACK_BEANS"),
+            getIngredient("ING_RED_ONION_RINGS"),
+            getIngredient("ING_CHIPOTLE_LIME_DRESSING"),
+        ],
+    },
+
+    {
+        title: "Kids Hot Dog",
+        ingredients: [
+            getIngredient("ING_HOT_DOG_BUN"),
+            getIngredient("ING_ALL_BEEF_DOG"),
+        ],
+    },
+
+    {
+        title: "Kids Smash Burger",
+        ingredients: [
+            getIngredient("ING_GRILLED_BRIOCHE_BUN_BOTTOM"),
+            getIngredient("ING_BEEF_PATTY"),
+            getIngredient("ING_AMERICAN_CHEESE_SLICE"),
+            getIngredient("ING_KETCHUP"),
+            getIngredient("ING_GRILLED_BRIOCHE_BUN_TOP"),
+        ],
+    },
+
 ];
