@@ -7,13 +7,14 @@ import { Carousel } from "antd";
 import {
     Ingredient,
     Recipe,
-    ingredients,
-    recipes, ingredientSlideOrderByMenu, getIngredientsByCodes,
+    recipes,
+    ingredientSlideOrderByMenu,
+    getIngredientsByCodes,
 } from "./data/trainingData";
 
 import "./TrainingPage.Styles.scss";
 
-const INGREDIENTS_PER_SLIDE = 12;
+const INGREDIENTS_PER_SLIDE = 8;
 
 const getRandomRecipe = (): Recipe => {
     const index = Math.floor(Math.random() * recipes.length);
@@ -51,11 +52,6 @@ export const TrainingPage = () => {
 
         return chunkIngredients(orderedIngredients, INGREDIENTS_PER_SLIDE);
     }, []);
-
-    // const ingredientSlides = useMemo(
-    //     () => chunkIngredients(ingredients, INGREDIENTS_PER_SLIDE),
-    //     []
-    // );
 
     const selectedCodes = useMemo(
         () => selectedIngredients.map((item) => item.code),
@@ -178,69 +174,6 @@ export const TrainingPage = () => {
                 )}
             </section>
 
-            <section className="training-page__ingredients">
-                <h2 className="training-page__section-title">Ingredients</h2>
-
-                <Carousel
-                    dots
-                    draggable
-                    infinite={false}
-                    className="training-page__ingredients-carousel"
-                >
-                    {ingredientSlides.map((slide, slideIndex) => (
-                        <div
-                            key={`ingredient-slide-${slideIndex}`}
-                            className="training-page__slide"
-                        >
-                            <div className="training-page__grid">
-                                {slide.map((ingredient) => {
-                                    const isSelected = selectedCodes.includes(ingredient.code);
-
-                                    return (
-                                        <button
-                                            key={ingredient.code}
-                                            type="button"
-                                            onClick={() => handleIngredientClick(ingredient)}
-                                            className={`training-page__ingredient ${
-                                                isSelected
-                                                    ? "training-page__ingredient--active"
-                                                    : ""
-                                            }`}
-                                        >
-                                            <Image
-                                                src={ingredient.imgUrl}
-                                                alt={ingredient.name}
-                                                width={72}
-                                                height={72}
-                                                className="training-page__ingredient-image"
-                                            />
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    ))}
-                </Carousel>
-            </section>
-
-            <div className="training-page__bottom-actions">
-                <button
-                    type="button"
-                    onClick={handleNextRecipe}
-                    className="training-page__bottom-button training-page__bottom-button--secondary"
-                >
-                    Next
-                </button>
-
-                <button
-                    type="button"
-                    onClick={handleDone}
-                    className="training-page__bottom-button"
-                >
-                    DONE
-                </button>
-            </div>
-
             {result && <div className="training-page__result">{result}</div>}
 
             {showAnswer && (
@@ -264,6 +197,71 @@ export const TrainingPage = () => {
                     </div>
                 </section>
             )}
+
+            <div className="training-page__fixed-panel">
+                <section className="training-page__ingredients">
+                    <h2 className="training-page__section-title">Ingredients</h2>
+
+                    <Carousel
+                        dots
+                        draggable
+                        infinite={false}
+                        className="training-page__ingredients-carousel"
+                    >
+                        {ingredientSlides.map((slide, slideIndex) => (
+                            <div
+                                key={`ingredient-slide-${slideIndex}`}
+                                className="training-page__slide"
+                            >
+                                <div className="training-page__grid">
+                                    {slide.map((ingredient) => {
+                                        const isSelected = selectedCodes.includes(ingredient.code);
+
+                                        return (
+                                            <button
+                                                key={ingredient.code}
+                                                type="button"
+                                                onClick={() => handleIngredientClick(ingredient)}
+                                                className={`training-page__ingredient ${
+                                                    isSelected
+                                                        ? "training-page__ingredient--active"
+                                                        : ""
+                                                }`}
+                                            >
+                                                <Image
+                                                    src={ingredient.imgUrl}
+                                                    alt={ingredient.name}
+                                                    width={72}
+                                                    height={72}
+                                                    className="training-page__ingredient-image"
+                                                />
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        ))}
+                    </Carousel>
+                </section>
+
+                <div className="training-page__bottom-actions">
+                    <button
+                        type="button"
+                        onClick={handleNextRecipe}
+                        className="training-page__bottom-button training-page__bottom-button--secondary"
+                    >
+                        Next
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={handleDone}
+                        className="training-page__bottom-button"
+                    >
+                        DONE
+                    </button>
+                </div>
+            </div>
         </main>
     );
 };
