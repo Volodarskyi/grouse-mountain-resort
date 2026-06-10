@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
-import { Carousel } from "antd";
+import { Carousel, Modal } from "antd";
 
 import {
     Ingredient,
@@ -38,6 +38,7 @@ export const TrainingPage = () => {
     const [showAnswer, setShowAnswer] = useState(false);
     const [missingIngredients, setMissingIngredients] = useState<string[]>([]);
     const [extraIngredients, setExtraIngredients] = useState<string[]>([]);
+    const [isCheckModalOpen, setIsCheckModalOpen] = useState(false);
 
     useEffect(() => {
         setRecipe(getRandomRecipe());
@@ -97,13 +98,19 @@ export const TrainingPage = () => {
         const isCorrect = missing.length === 0 && extra.length === 0;
 
         setResult(isCorrect ? "Correct ✅" : "Incorrect ❌");
+        setIsCheckModalOpen(true);
     };
 
     const handleNextRecipe = () => {
         setRecipe(getRandomRecipe());
         setSelectedIngredients([]);
+        setIsCheckModalOpen(false);
         resetCheckState();
     };
+
+    const modalMissingIngredients = recipe.ingredients.filter((ingredient) =>
+        missingIngredients.includes(ingredient.name)
+    );
 
     return (
         <main className="training-page">
@@ -262,6 +269,73 @@ export const TrainingPage = () => {
                     </button>
                 </div>
             </div>
+
+            <Modal
+                open={isCheckModalOpen}
+                title={
+                    <div className="training-page__modal-title">
+                        <span className="training-page__modal-label">Check:</span>
+                        <span className="training-page__modal-recipe-name">{recipe.title}</span>
+                    </div>
+                }
+                footer={null}
+                closable={false}
+                keyboard={false}
+                mask={{ closable: false }}
+                centered
+                width={420}
+                className="training-page__check-modal"
+            >
+                <div className="training-page__check-list">
+                    {selectedIngredients.map((ingredient) => {
+                        const isExtra = extraIngredients.includes(ingredient.name);
+
+                        return (
+                            <div
+                                key={ingredient.code}
+                                className={`training-page__check-item ${
+                                    isExtra ? "training-page__check-item--wrong" : ""
+                                }`}
+                            >
+                                <Image
+                                    src={ingredient.imgUrl}
+                                    alt={ingredient.name}
+                                    width={44}
+                                    height={44}
+                                    className="training-page__check-image"
+                                />
+
+                                <span>{ingredient.name}</span>
+                            </div>
+                        );
+                    })}
+
+                    {modalMissingIngredients.map((ingredient) => (
+                        <div
+                            key={`missing-${ingredient.code}`}
+                            className="training-page__check-item training-page__check-item--missing"
+                        >
+                            <Image
+                                src={ingredient.imgUrl}
+                                alt={ingredient.name}
+                                width={44}
+                                height={44}
+                                className="training-page__check-image"
+                            />
+
+                            <span>{ingredient.name}</span>
+                        </div>
+                    ))}
+                </div>
+
+                <button
+                    type="button"
+                    onClick={handleNextRecipe}
+                    className="training-page__modal-next-button"
+                >
+                    Next
+                </button>
+            </Modal>
         </main>
     );
 };
