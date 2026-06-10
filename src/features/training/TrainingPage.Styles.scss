@@ -233,7 +233,7 @@
 
   &__ingredients {
     margin-bottom: 0;
-    padding: 0 20px 12px;
+    padding: 0 20px;
   }
 
   &__grid {
@@ -377,7 +377,7 @@
       position: absolute !important;
       left: 0;
       right: 0;
-      bottom: 4px !important;
+      //bottom: 4px !important;
 
       display: flex !important;
       justify-content: center !important;
@@ -505,7 +505,7 @@
     }
 
     &__ingredients {
-      padding: 0 20px 12px;
+      padding: 0 20px;
     }
 
     &__grid {
