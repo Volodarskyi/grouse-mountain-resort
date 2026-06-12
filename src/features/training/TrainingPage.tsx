@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Carousel, Modal } from "antd";
 
 import {
@@ -32,17 +32,13 @@ const chunkIngredients = (items: Ingredient[], size: number): Ingredient[][] => 
 };
 
 export const TrainingPage = () => {
-    const [recipe, setRecipe] = useState<Recipe>(recipes[0]);
+    const [recipe, setRecipe] = useState<Recipe>(getRandomRecipe);
     const [selectedIngredients, setSelectedIngredients] = useState<Ingredient[]>([]);
     const [result, setResult] = useState("");
     const [showAnswer, setShowAnswer] = useState(false);
     const [missingIngredients, setMissingIngredients] = useState<string[]>([]);
     const [extraIngredients, setExtraIngredients] = useState<string[]>([]);
     const [isCheckModalOpen, setIsCheckModalOpen] = useState(false);
-
-    useEffect(() => {
-        setRecipe(getRandomRecipe());
-    }, []);
 
     const currentMenu = "RustyRail";
 
