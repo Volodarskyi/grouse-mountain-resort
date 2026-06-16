@@ -1,7 +1,9 @@
 import axios from "axios";
 
+const baseURL = 'placeholderForBaseURL';
+
 export const apiClient = axios.create({
-    baseURL: "https://nesto-fe-exam.vercel.app/api",
+    baseURL: baseURL,
 
     headers: {
         Accept: "application/json",
