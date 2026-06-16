@@ -167,7 +167,9 @@ Use root-relative paths in JSX, CSS, and data objects:
 ```
 
 ```css
-background-image: url("/assets/ingredients/BeefPatty.png");
+.ingredient-card {
+  background-image: url("/assets/ingredients/BeefPatty.png");
+}
 ```
 
 For images rendered through `next/image`, pass the same root-relative path to `src`.
@@ -327,7 +329,13 @@ Prefer existing local styling patterns before introducing a new approach. Keep r
 The TypeScript path alias is configured in `tsconfig.json`:
 
 ```json
-"@/*": ["./src/*"]
+{
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
 ```
 
 Use `@/*` for imports from `src` when it improves readability.
