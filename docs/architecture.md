@@ -4,29 +4,35 @@ This document describes the current architecture of the Grouse Mountain Resort a
 
 ## Overview
 
-The app is a Next.js `16.2.6` project using the App Router, React `19.2.4`, TypeScript, React Query, MobX, Axios, Zod, React Hook Form, CSS Modules, and SCSS.
+The app is a Next.js `16.2.6` project using the App Router, React `19.2.4`, TypeScript, React Query, MobX, Axios, Ant Design, CSS, and SCSS.
 
-The codebase is organized around route entry points in `src/app` and feature modules in `src/features`. API access, shared types, i18n, and global styling live in dedicated top-level `src` folders. Static images and icons live in `public`.
+The current source tree is small. The root app shell is in `src/app`, feature UI is in `src/features`, client state is in `src/store`, local i18n utilities are in `src/i18n`, and static images live in `public`.
 
 ## Runtime Stack
 
 - Framework: Next.js `16.2.6`
-- UI runtime: React `19.2.4`
+- UI runtime: React `19.2.4` and React DOM `19.2.4`
 - Language: TypeScript with `strict` enabled
 - Data fetching cache: `@tanstack/react-query`
-- Client UI state: MobX
+- Client UI state: MobX with `mobx-react-lite`
+- UI library: Ant Design `6.4.3`
 - HTTP client: Axios
 - Forms: `react-hook-form`
 - Validation: Zod
-- Styling: global CSS, CSS Modules, and SCSS
-- Tests: Vitest
+- Styling: global CSS and SCSS
+- Tests: Vitest, Testing Library, and jsdom
 
 ## Source Layout
 
 ```txt
 public/
   favicon.png
+  file.svg
+  globe.svg
   GROUSE-FAVICON_800-round.png
+  next.svg
+  vercel.svg
+  window.svg
   assets/
     icons/
       icon-chef.png
@@ -69,36 +75,32 @@ public/
 src/
   api/
     apiClient.ts
-    applicationsApi.ts
-    productsApi.ts
   app/
     globals.css
     layout.tsx
     page.tsx
     providers.tsx
-    [lang]/
-      layout.tsx
-      page.tsx
-      applications/
-        page.tsx
-        [id]/
-          contact/
-            page.tsx
-      training/
-        page.tsx
   components/
     layout/
       Header/
+        Header.module.css
+        Header.Styles.scss
+        Header.tsx
   features/
-    application-form/
-    applications-list/
     home/
-    products/
+      HomePage.Styles.scss
+      HomePage.tsx
     training/
+      TrainingPage.Styles.scss
+      TrainingPage.tsx
+      data/
+        trainingData.ts
   i18n/
     config.ts
     getDictionary.ts
     dictionaries/
+      en.ts
+      fr.ts
   store/
     combineReducers.ts
     provider.tsx
@@ -118,23 +120,24 @@ src/
 Routes are defined with the App Router under `src/app`.
 
 - `/` is handled by `src/app/page.tsx`.
-- `/:lang` is handled by `src/app/[lang]/page.tsx`.
-- `/:lang/applications` is handled by `src/app/[lang]/applications/page.tsx`.
-- `/:lang/applications/:id/contact` is handled by `src/app/[lang]/applications/[id]/contact/page.tsx`.
-- `/:lang/training` is handled by `src/app/[lang]/training/page.tsx`.
+- `src/app/page.tsx` redirects to `/${defaultLocale}`.
 
-Localized routes use `src/app/[lang]/layout.tsx`, which validates the locale and renders the shared `Header`.
+Current limitation: `src/app/[lang]` does not exist at the time of this update, so `/en` and `/fr` are not implemented even though the root page redirects to `/en`.
 
-Important Next.js 16 convention in this project: route `params` are typed and awaited as `Promise<...>` in route components and layouts. Before changing route APIs, read the relevant docs in `node_modules/next/dist/docs/`.
+The `HomePage` and `Header` components are already written to accept a locale and generate localized links, but they are not currently mounted by route files. Add localized route files before relying on these components in production navigation.
+
+Important Next.js 16 convention in this project: before changing route APIs, read the relevant version-matched docs in `node_modules/next/dist/docs/`.
 
 ## Application Shell
 
 `src/app/layout.tsx` is the root layout. It:
 
-- loads the Montserrat font with `next/font/google`;
-- defines global metadata and favicon;
+- imports `antd/dist/reset.css`;
 - imports `src/app/globals.css`;
-- wraps all pages with `Providers`.
+- loads the Lato font with `next/font/google`;
+- defines global metadata and favicon;
+- wraps all pages with `AntdRegistry`;
+- renders the shared `Providers` component.
 
 `src/app/providers.tsx` is a client component that creates a React Query `QueryClient`. Default query behavior:
 
@@ -156,7 +159,6 @@ Examples:
 - `public/assets/logo/GMR_logo_black.png` is available as `/assets/logo/GMR_logo_black.png`.
 - `public/assets/logo/GMR_logo_white.png` is available as `/assets/logo/GMR_logo_white.png`.
 - `public/assets/ingredients/BeefPatty.png` is available as `/assets/ingredients/BeefPatty.png`.
-- `public/assets/ingredients/GrilledBriocheBunTop.png` is available as `/assets/ingredients/GrilledBriocheBunTop.png`.
 
 Use root-relative paths in JSX, CSS, and data objects:
 
@@ -175,71 +177,57 @@ Asset groups:
 - Root files contain favicons and default Next.js template SVG files.
 - `assets/logo` contains Grouse Mountain Resort logo images.
 - `assets/icons` contains reusable icon images.
-- `assets/ingredients` contains ingredient/product PNG images used by food-related UI.
+- `assets/ingredients` contains ingredient PNG images used by the training UI.
 
 ## Feature Modules
 
-Feature-specific UI, hooks, data helpers, and styles are grouped under `src/features`.
+Feature-specific UI, data helpers, and styles are grouped under `src/features`.
 
 ### `features/home`
 
-Owns the localized home page experience rendered by `src/app/[lang]/page.tsx`.
-
-### `features/products`
-
-Owns product display logic and product utility functions.
+Owns the home page UI component. It accepts `lang: string` and currently links to `/${lang}/training`.
 
 Key files:
 
-- `components/ProductsPage.tsx`
-- `components/ProductCard.tsx`
-- `hooks/useProducts.ts`
-- `utils/getBestProductsByType.ts`
-- `utils/getBestProductsByType.test.ts`
+- `HomePage.tsx`
+- `HomePage.Styles.scss`
 
-### `features/applications-list`
-
-Owns the applications listing page.
-
-Key files:
-
-- `components/ApplicationsListPage.tsx`
-- `hooks/useApplications.ts`
-- `utils/getValidApplications.ts`
-
-### `features/application-form`
-
-Owns the application contact flow.
-
-Key files:
-
-- `components/ApplicationContactPage.tsx`
-- `components/ApplicationContactForm.tsx`
-- `components/SelectedProductCard.tsx`
-- `hooks/useApplication.ts`
-- `schemas/applicantSchema.ts`
-
-Form validation is dictionary-aware: validation messages are passed into `createApplicantSchema`.
+Current limitation: this feature is not mounted by an App Router page.
 
 ### `features/training`
 
-Owns the training page and its static training data.
+Owns the training game UI and static recipe/ingredient data.
 
 Key files:
 
 - `TrainingPage.tsx`
+- `TrainingPage.Styles.scss`
 - `data/trainingData.ts`
+
+The training UI is client-side, uses Ant Design `Carousel` and `Modal`, renders ingredient images through `next/image`, and checks selected ingredients against a randomly chosen recipe.
+
+Current limitation: this feature is not mounted by an App Router page.
+
+## Components
+
+### `components/layout/Header`
+
+`Header.tsx` is a client component that renders the Grouse Mountain logo and an `EN`/`FR` language switcher. It uses `usePathname` and `useRouter` from `next/navigation` to replace the current locale segment in the path.
+
+Active styling is in `Header.Styles.scss`. `Header.module.css` exists but is not imported by `Header.tsx`.
+
+Current limitation: this component is not mounted by an App Router layout or page.
 
 ## API Layer
 
-All external API calls go through `src/api`.
+All shared API setup should live under `src/api`.
 
 `src/api/apiClient.ts` creates the shared Axios instance.
 
 Current base URL:
 
 ```txt
-https://nesto-fe-exam.vercel.app/api
+placeholderForBaseURL
 ```
 
 Current shared headers:
@@ -248,24 +236,21 @@ Current shared headers:
 - `Content-Type: application/json`
 - `X-Nesto-Candidat: Artem`
 
-API modules expose typed functions:
+Current timeout:
 
-- `productsApi.ts`: `getProducts`
-- `applicationsApi.ts`: `createApplication`, `getApplications`, `getApplicationById`, `updateApplication`
+```txt
+25000 ms
+```
 
-React Query hooks should call API module functions instead of using Axios directly in components.
+There are no current feature API modules such as `productsApi.ts` or `applicationsApi.ts`. Add typed API modules under `src/api` when features need remote data.
 
 ## Data Fetching
 
-Client-side server state is handled through React Query.
+Client-side server state is handled through React Query. The `QueryClientProvider` is installed in `src/app/providers.tsx`.
 
-Current query keys:
+There are no active React Query hooks or query keys in the current source tree.
 
-- `["products"]`
-- `["applications"]`
-- `["application", applicationId]`
-
-When adding mutations, invalidate the smallest relevant query key instead of refetching unrelated data.
+When adding queries or mutations, keep API calls in `src/api`, wrap feature-specific query hooks in the relevant `src/features/<feature>/hooks` folder, and invalidate the smallest relevant query key.
 
 ## Client UI State
 
@@ -290,11 +275,13 @@ Current `modalStore` actions:
 - `closeModal()`
 - `setPayload(payload)`
 
+`useStores.ts` currently returns `useContext(StoreContext)`. `StoreContext` is created with `RootStore` as its default value, so the hook returns the root store object even outside `StoreWrapper`.
+
 When using observable store values inside React components, wrap the component with `observer` from `mobx-react-lite`.
 
 ## Internationalization
 
-i18n is handled locally under `src/i18n`.
+i18n utilities are handled locally under `src/i18n`.
 
 Supported locales are defined in `src/i18n/config.ts`:
 
@@ -305,16 +292,18 @@ The default locale is `en`.
 
 `getDictionary(locale)` returns the matching dictionary from `src/i18n/dictionaries`. Dictionary shape is inferred from the English dictionary through `Dictionary = typeof en`.
 
+Current limitation: dictionaries still contain mortgage/application/product copy from an earlier domain, and no localized App Router pages currently consume them.
+
 When adding user-facing text, update both `en.ts` and `fr.ts` and pass dictionary entries through route or feature props.
 
 ## Types
 
 Shared domain types live in `src/types`.
 
-- `types/products.ts` contains product domain types.
-- `types/applications.ts` contains application and application-creation types.
+- `types/products.ts` contains product domain types from the earlier mortgage product flow.
+- `types/applications.ts` contains application and application-creation types from the earlier mortgage application flow.
 
-Feature-local form types may live near their schema when they are not reused outside that feature.
+Current limitation: these types are not used by active route files or feature modules.
 
 ## Styling
 
@@ -323,10 +312,13 @@ Global styles live in:
 - `src/app/globals.css`
 - `src/styles/tokens.css`
 
-Component and feature styles currently use a mix of:
+Component and feature styles currently use SCSS files with BEM-style class names, for example:
 
-- CSS Modules, for example `*.module.css`
-- SCSS files, for example `*.Styles.scss`
+- `Header.Styles.scss`
+- `HomePage.Styles.scss`
+- `TrainingPage.Styles.scss`
+
+`Header.module.css` is present but unused.
 
 Prefer existing local styling patterns before introducing a new approach. Keep reusable design tokens in `tokens.css` when values are shared across features.
 
@@ -344,11 +336,7 @@ Use `@/*` for imports from `src` when it improves readability.
 
 Vitest is configured through the project dependencies and `npm test` script.
 
-Current test coverage exists for product selection logic in:
-
-```txt
-src/features/products/utils/getBestProductsByType.test.ts
-```
+There are no current test files in `src`.
 
 For new utility functions, data-shaping behavior, or business rules, add focused Vitest tests near the code under test.
 
