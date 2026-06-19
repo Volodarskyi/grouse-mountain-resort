@@ -75,4 +75,27 @@
     line-height: 1.4;
     opacity: 0.85;
   }
+
+  &__test-button {
+    width: fit-content;
+    min-height: 44px;
+    padding: 0 18px;
+
+    color: var(--color-white);
+    background: var(--color-secondary);
+    border: 0;
+    border-radius: 8px;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+
+    transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14);
+    }
+  }
 }

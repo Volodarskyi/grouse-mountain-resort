@@ -81,6 +81,16 @@ src/
     page.tsx
     providers.tsx
   components/
+    Ui/
+      UiModals/
+        ModalRegistry.tsx
+        UiModalRoot.Styles.scss
+        UiModalRoot.tsx
+        bodies/
+          AiChatAssistant.tsx
+          RecipeDetail.tsx
+          ShiftReportPreview.tsx
+          TestModal.tsx
     layout/
       Header/
         Header.module.css
@@ -212,6 +222,18 @@ Current limitation: this feature is not mounted by an App Router page.
 
 ## Components
 
+### `components/Ui/UiModals`
+
+`UiModalRoot.tsx` is mounted once from `src/app/providers.tsx` and renders the active app-wide modal through Ant Design `Modal`.
+
+The modal architecture uses a component registry:
+
+- `src/store/reducers/modalStore.ts` stores only serializable modal state: `activeModal`, typed `modalProps`, and simple `modalOptions`.
+- `ModalRegistry.tsx` maps modal IDs such as `RECIPE_DETAIL`, `AI_CHAT_ASSISTANT`, `SHIFT_REPORT_PREVIEW`, and `TEST_MODAL` to lazily loaded body components with `next/dynamic`.
+- Modal body components live in `components/Ui/UiModals/bodies` and receive their data through typed props.
+
+Open app-wide modals through `modalStore.openModal(type, props, options)`. Keep React components, JSX nodes, and callbacks out of the store; add a new registry entry and typed props when a new modal body is needed.
+
 ### `components/layout/Header`
 
 `Header.tsx` is a client component that renders the Grouse Mountain logo and an `EN`/`FR` language switcher. It uses `usePathname` and `useRouter` from `next/navigation` to replace the current locale segment in the path.
@@ -267,15 +289,16 @@ Current store layout:
 
 Current `modalStore` state:
 
-- `isOpen`: whether a modal is open.
-- `name`: modal identifier.
-- `payload`: optional modal data.
+- `activeModal`: app-wide modal identifier.
+- `modalProps`: typed data passed to the active modal body.
+- `modalOptions`: simple Ant Design shell options such as `title`, `width`, and close behavior.
+- `isOpen`: computed flag derived from `activeModal`.
 
 Current `modalStore` actions:
 
-- `openModal(name, payload?)`
+- `openModal(type, props, options?)`
 - `closeModal()`
-- `setPayload(payload)`
+- `setModalProps(props)`
 
 `useStores.ts` currently returns `useContext(StoreContext)`. `StoreContext` is created with `RootStore` as its default value, so the hook returns the root store object even outside `StoreWrapper`.
 
@@ -361,8 +384,8 @@ npm test
 
 Recommended verification:
 
-- Run `npm run lint` after TypeScript, React, route, or styling edits.
-- Run `npm run build` after route, layout, metadata, or Next.js API changes.
+- Do not run `npm run lint` or `npm run build` unless the user explicitly asks for it.
+- When implementation is complete, tell the user that build and lint can be checked.
 - Run `npm test` after utility, validation, or data logic changes.
 
 ## Change Guidelines

@@ -58,6 +58,7 @@ This version has breaking changes - APIs, conventions, and file structure may al
 - When adding user-facing localized text, update both `src/i18n/dictionaries/en.ts` and `src/i18n/dictionaries/fr.ts`.
 
 ## Verification
-- For UI or routing changes, run `npm run lint` and `npm run build` when practical.
+- Do not run `npm run lint` or `npm run build` unless the user explicitly asks for it.
+- When implementation is complete, tell the user: "Можно проверить билд и линт."
 - For utility or data-shaping changes, add or update focused Vitest coverage and run `npm test`.
 - Before changing any Next.js API usage, read the relevant version-matched docs in `node_modules/next/dist/docs/`.

@@ -1,5 +1,9 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+
+import { useStores } from "@/store/hooks/useStores";
 
 import "./HomePage.Styles.scss";
 
@@ -8,6 +12,22 @@ type HomePageProps = {
 };
 
 export const HomePage = ({ lang }: HomePageProps) => {
+    const { modalStore } = useStores();
+
+    const handleOpenTestModal = () => {
+        modalStore.openModal(
+            "TEST_MODAL",
+            {
+                message: "Global modal is connected and receives typed props.",
+                openedFrom: "Home page",
+            },
+            {
+                title: "Global modal test",
+                width: 520,
+            },
+        );
+    };
+
     return (
         <main className="home-page">
             <section className="home-page__section">
@@ -32,6 +52,14 @@ export const HomePage = ({ lang }: HomePageProps) => {
                             </p>
                         </div>
                     </Link>
+
+                    <button
+                        type="button"
+                        className="home-page__test-button"
+                        onClick={handleOpenTestModal}
+                    >
+                        Test modal
+                    </button>
                 </div>
             </section>
         </main>

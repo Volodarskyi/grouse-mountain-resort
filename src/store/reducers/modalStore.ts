@@ -1,28 +1,83 @@
 import { makeAutoObservable } from "mobx";
 
+export type ModalType =
+    | "RECIPE_DETAIL"
+    | "AI_CHAT_ASSISTANT"
+    | "SHIFT_REPORT_PREVIEW"
+    | "TEST_MODAL";
+
+export type RecipeDetailModalProps = {
+    recipeId: string;
+    recipeName: string;
+    description?: string;
+};
+
+export type AiChatAssistantModalProps = {
+    context?: string;
+    initialMessage?: string;
+};
+
+export type ShiftReportPreviewModalProps = {
+    reportId: string;
+    aiErrors: string[];
+};
+
+export type TestModalProps = {
+    message: string;
+    openedFrom: string;
+};
+
+export type ModalPropsMap = {
+    RECIPE_DETAIL: RecipeDetailModalProps;
+    AI_CHAT_ASSISTANT: AiChatAssistantModalProps;
+    SHIFT_REPORT_PREVIEW: ShiftReportPreviewModalProps;
+    TEST_MODAL: TestModalProps;
+};
+
+export type ModalOptions = {
+    title?: string;
+    width?: number | string;
+    centered?: boolean;
+    closable?: boolean;
+    maskClosable?: boolean;
+    keyboard?: boolean;
+    className?: string;
+};
+
 class ModalStore {
-    isOpen = false;
-    name: string | null = null;
-    payload: unknown = null;
+    activeModal: ModalType | null = null;
+    modalProps: Partial<ModalPropsMap[ModalType]> = {};
+    modalOptions: ModalOptions = {};
 
     constructor() {
         makeAutoObservable(this, {}, { autoBind: true });
     }
 
-    openModal(name: string, payload?: unknown) {
-        this.isOpen = true;
-        this.name = name;
-        this.payload = payload ?? null;
+    get isOpen() {
+        return this.activeModal !== null;
+    }
+
+    openModal<TModal extends ModalType>(
+        type: TModal,
+        props: ModalPropsMap[TModal],
+        options: ModalOptions = {},
+    ) {
+        this.activeModal = type;
+        this.modalProps = props;
+        this.modalOptions = options;
     }
 
     closeModal() {
-        this.isOpen = false;
-        this.name = null;
-        this.payload = null;
+        this.activeModal = null;
+        this.modalProps = {};
+        this.modalOptions = {};
     }
 
-    setPayload(payload: unknown) {
-        this.payload = payload;
+    setModalProps<TModal extends ModalType>(props: Partial<ModalPropsMap[TModal]>) {
+        this.modalProps = {
+            ...this.modalProps,
+            ...props,
+        };
     }
 }
 
