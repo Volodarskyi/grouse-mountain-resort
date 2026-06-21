@@ -130,11 +130,6 @@ export const ingredients: Ingredient[] = [
         name: "Ketchup",
         imgUrl: "/assets/ingredients/Ketchup.png",
     },
-    // {
-    //     code: "ING_CHOPPED_HERB_MARINATED_CHICKEN",
-    //     name: "Chopped Herb Marinated Chicken",
-    //     imgUrl: "/assets/ingredients/ChoppedHerbMarinatedChicken.png",
-    // },
     {
         code: "ING_ROMAINE_LETTUCE",
         name: "Romaine Lettuce",
@@ -193,34 +188,27 @@ export const ingredientSlideOrderByMenu = {
         "ING_GRILLED_BRIOCHE_BUN_BOTTOM",
         "ING_HOT_DOG_BUN",
         "ING_BEYOND_MEAT_PATTY",
-
         "ING_BEEF_PATTY",
         "ING_DOUBLE_BEEF_PATTY",
         "ING_ALL_BEEF_DOG",
         "ING_BRATWURST_SAUSAGE",
-
-
         "ING_GRILLED_CHICKEN_BREAST",
         "ING_AMERICAN_CHEESE_SLICE",
         "ING_PARMESAN_CHEESE",
         "ING_PICKLES",
         "ING_CRISPY_BACON",
         "ING_FRESH_LETTUCE",
-
         "ING_RED_ONION_RINGS",
         "ING_GRILLED_ONION",
         "ING_BANANA_PEPPERS",
-
         "ING_SAUERKRAUT",
         "ING_CRISPY_ONION",
         "ING_CRUSHED_POTATO_CHIPS",
-        // "ING_CHOPPED_HERB_MARINATED_CHICKEN",
         "ING_ROMAINE_LETTUCE",
         "ING_TOMATO",
         "ING_SWEET_CORN",
         "ING_BLACK_BEANS",
         "ING_CROUTONS",
-
         "ING_PEAK_SAUCE",
         "ING_BBQ_SAUCE",
         "ING_MAYONNAISE",
@@ -229,7 +217,6 @@ export const ingredientSlideOrderByMenu = {
         "ING_BEER_MUSTARD",
         "ING_KETCHUP",
     ],
-
     chicken: [
         "ING_GRILLED_CHICKEN_BREAST",
         "ING_FRESH_LETTUCE",
@@ -259,7 +246,6 @@ export const recipes: Recipe[] = [
             getIngredient("ING_GRILLED_BRIOCHE_BUN_TOP"),
         ],
     },
-
     {
         title: "Double Black Diamond",
         ingredients: [
@@ -273,7 +259,6 @@ export const recipes: Recipe[] = [
             getIngredient("ING_GRILLED_BRIOCHE_BUN_TOP"),
         ],
     },
-
     {
         title: "The Ridge Runner",
         ingredients: [
@@ -288,7 +273,6 @@ export const recipes: Recipe[] = [
             getIngredient("ING_GRILLED_BRIOCHE_BUN_TOP"),
         ],
     },
-
     {
         title: "The Full Send",
         ingredients: [
@@ -303,7 +287,6 @@ export const recipes: Recipe[] = [
             getIngredient("ING_GRILLED_BRIOCHE_BUN_TOP"),
         ],
     },
-
     {
         title: "The First Ride",
         ingredients: [
@@ -315,7 +298,6 @@ export const recipes: Recipe[] = [
             getIngredient("ING_GRILLED_BRIOCHE_BUN_TOP"),
         ],
     },
-
     {
         title: "The Switchback",
         ingredients: [
@@ -328,7 +310,6 @@ export const recipes: Recipe[] = [
             getIngredient("ING_GRILLED_BRIOCHE_BUN_TOP"),
         ],
     },
-
     {
         title: "BBQ Chicken Burger",
         ingredients: [
@@ -342,7 +323,6 @@ export const recipes: Recipe[] = [
             getIngredient("ING_GRILLED_BRIOCHE_BUN_TOP"),
         ],
     },
-
     {
         title: "The Grouse Grind Dog",
         ingredients: [
@@ -353,7 +333,6 @@ export const recipes: Recipe[] = [
             getIngredient("ING_CRUSHED_POTATO_CHIPS"),
         ],
     },
-
     {
         title: "Bratwurst Bun",
         ingredients: [
@@ -364,7 +343,6 @@ export const recipes: Recipe[] = [
             getIngredient("ING_CRISPY_ONION"),
         ],
     },
-
     {
         title: "The Peak Chicken Salad",
         ingredients: [
@@ -377,7 +355,6 @@ export const recipes: Recipe[] = [
             getIngredient("ING_CHIPOTLE_LIME_DRESSING"),
         ],
     },
-
     {
         title: "Kids Hot Dog",
         ingredients: [
@@ -385,7 +362,6 @@ export const recipes: Recipe[] = [
             getIngredient("ING_ALL_BEEF_DOG"),
         ],
     },
-
     {
         title: "Kids Smash Burger",
         ingredients: [
@@ -396,5 +372,4 @@ export const recipes: Recipe[] = [
             getIngredient("ING_GRILLED_BRIOCHE_BUN_TOP"),
         ],
     },
-
 ];

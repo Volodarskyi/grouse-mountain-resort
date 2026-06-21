@@ -1,4 +1,4 @@
-import { HomePage } from "@/features/home/HomePage";
+import { HomePage } from "@/pages/HomePage/HomePage";
 
 type PageProps = {
     params: Promise<{

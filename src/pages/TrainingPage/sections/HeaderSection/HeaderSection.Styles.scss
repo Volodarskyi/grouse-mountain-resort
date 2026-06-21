@@ -1,0 +1,38 @@
+.training-header-section {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+
+  margin-bottom: 8px;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  background: var(--color-background);
+
+  &__label {
+    display: flex;
+
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--color-text-secondary);
+  }
+
+  &__recipe-name {
+    max-width: 520px;
+    margin-left: 8px;
+
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--color-primary);
+  }
+}
+
+@media (max-width: 480px) {
+  .training-header-section {
+    &__recipe-name {
+      font-size: 24px;
+    }
+  }
+}

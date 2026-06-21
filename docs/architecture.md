@@ -4,9 +4,9 @@ This document describes the current architecture of the Grouse Mountain Resort a
 
 ## Overview
 
-The app is a Next.js `16.2.6` project using the App Router, React `19.2.4`, TypeScript, React Query, MobX, Axios, Ant Design, CSS, and SCSS.
+The app is a Next.js `16.2.6` project using the App Router, React `19.2.4`, TypeScript, React Query, MobX, Axios, Ant Design, global CSS, and SCSS.
 
-The current source tree is small. The root app shell is in `src/app`, feature UI is in `src/features`, client state is in `src/store`, local i18n utilities are in `src/i18n`, and static images live in `public`.
+Routing lives only in `src/app`. Business page containers live in `src/pages`. Page-specific UI sections live under their owning page. Business data and logic live in `src/features`.
 
 ## Runtime Stack
 
@@ -25,53 +25,6 @@ The current source tree is small. The root app shell is in `src/app`, feature UI
 ## Source Layout
 
 ```txt
-public/
-  favicon.png
-  file.svg
-  globe.svg
-  GROUSE-FAVICON_800-round.png
-  next.svg
-  vercel.svg
-  window.svg
-  assets/
-    icons/
-      icon-chef.png
-    ingredients/
-      AllBeefDog.png
-      AmericanCheeseSlice.png
-      BananaPeppers.png
-      BBQSauce.png
-      BeefPatty.png
-      BeerMustard.png
-      BeyondMeatPatty.png
-      BlackBeans.png
-      BratwurstSausage.png
-      CaesarDressing.png
-      ChipotleLimeDressing.png
-      CrispyBacon.png
-      CrispyOnion.png
-      Croutons.png
-      CrushedPotatoChips.png
-      DoubleBeefPatty.png
-      FreshLettuce.png
-      GrilledBriocheBunBottom.png
-      GrilledBriocheBunTop.png
-      GrilledChickenBreast.png
-      GrilledOnion.png
-      HotDogBun.png
-      Ketchup.png
-      Mayonnaise.png
-      ParmesanCheese.png
-      PeakSauce.png
-      Pickles.png
-      RedOnionRings.png
-      RomaineLettuce.png
-      Sauerkraut.png
-      SweetCorn.png
-      Tomato.png
-    logo/
-      GMR_logo_black.png
-      GMR_logo_white.png
 src/
   api/
     apiClient.ts
@@ -80,227 +33,183 @@ src/
     layout.tsx
     page.tsx
     providers.tsx
-  components/
-    Ui/
-      UiModals/
-        ModalRegistry.tsx
-        UiModalRoot.Styles.scss
-        UiModalRoot.tsx
-        bodies/
-          AiChatAssistant.tsx
-          RecipeDetail.tsx
-          ShiftReportPreview.tsx
-          TestModal.tsx
-    layout/
-      Header/
-        Header.module.css
-        Header.Styles.scss
-        Header.tsx
-  features/
-    home/
-      HomePage.Styles.scss
+    [lang]/
+      layout.tsx
+      page.tsx
+      training/
+        page.tsx
+  pages/
+    HomePage/
       HomePage.tsx
-    training/
-      TrainingPage.Styles.scss
+      HomePage.Styles.scss
+      sections/
+        HeroSection/
+          HeroSection.tsx
+          HeroSection.Styles.scss
+        MenuSection/
+          MenuSection.tsx
+          MenuSection.Styles.scss
+    TrainingPage/
       TrainingPage.tsx
-      data/
+      TrainingPage.Styles.scss
+      sections/
+        HeaderSection/
+          HeaderSection.tsx
+          HeaderSection.Styles.scss
+        SelectedIngredientsSection/
+          SelectedIngredientsSection.tsx
+          SelectedIngredientsSection.Styles.scss
+        IngredientsSliderSection/
+          IngredientsSliderSection.tsx
+          IngredientsSliderSection.Styles.scss
+        BottomActionsSection/
+          BottomActionsSection.tsx
+          BottomActionsSection.Styles.scss
+  features/
+    training/
+      model/
         trainingData.ts
+      lib/
+        trainingRecipe.ts
+        trainingRecipe.test.ts
+  components/
   i18n/
-    config.ts
-    getDictionary.ts
-    dictionaries/
-      en.ts
-      fr.ts
   store/
-    combineReducers.ts
-    provider.tsx
-    hooks/
-      useStores.ts
-    reducers/
-      modalStore.ts
   styles/
-    tokens.css
   types/
-    applications.ts
-    products.ts
 ```
 
 ## Routing
 
 Routes are defined with the App Router under `src/app`.
 
-- `/` is handled by `src/app/page.tsx`.
-- `src/app/page.tsx` redirects to `/${defaultLocale}`.
+- `/` is handled by `src/app/page.tsx` and redirects to `/${defaultLocale}`.
+- `/${lang}` is handled by `src/app/[lang]/page.tsx` and renders `src/pages/HomePage/HomePage.tsx`.
+- `/${lang}/training` is handled by `src/app/[lang]/training/page.tsx` and renders `src/pages/TrainingPage/TrainingPage.tsx`.
+- `src/app/[lang]/layout.tsx` validates the locale, loads the dictionary, and mounts the shared `Header`.
 
-Current limitation: `src/app/[lang]` does not exist at the time of this update, so `/en` and `/fr` are not implemented even though the root page redirects to `/en`.
-
-The `HomePage` and `Header` components are already written to accept a locale and generate localized links, but they are not currently mounted by route files. Add localized route files before relying on these components in production navigation.
+Keep route files thin. They should validate route params, load route-level data when needed, and delegate UI to `src/pages`.
 
 Important Next.js 16 convention in this project: before changing route APIs, read the relevant version-matched docs in `node_modules/next/dist/docs/`.
 
+## Pages And Sections
+
+Business page containers live in `src/pages`.
+
+Sections belong to pages. Do not create `src/sections`.
+
+Use this structure:
+
+```txt
+src/pages/
+  HomePage/
+    HomePage.tsx
+    HomePage.Styles.scss
+    sections/
+      HeroSection/
+      MenuSection/
+  TrainingPage/
+    TrainingPage.tsx
+    TrainingPage.Styles.scss
+    sections/
+      HeaderSection/
+      SelectedIngredientsSection/
+      IngredientsSliderSection/
+      BottomActionsSection/
+```
+
+Each section must own its own SCSS file. Page-level SCSS should contain only page shell styles and layout concerns that do not belong to a specific section.
+
+Page-specific UI stays in page sections. Business logic stays in features. Generic reusable UI stays in `src/components` or a future shared component folder.
+
+## Features
+
+Business logic belongs to `src/features`.
+
+Preferred feature structure:
+
+```txt
+features/
+  training/
+    model/
+    api/
+    lib/
+    components/
+  menu/
+    model/
+    api/
+    lib/
+    components/
+  orders/
+    model/
+    api/
+    lib/
+    components/
+  auth/
+    model/
+    api/
+    lib/
+```
+
+Current active feature:
+
+- `features/training/model/trainingData.ts` stores ingredient and recipe data.
+- `features/training/lib/trainingRecipe.ts` stores training business helpers such as recipe selection and ingredient chunking.
+
+The training UI is one page section group under `src/pages/TrainingPage/sections`; it should not be placed back under `features/training`.
+
 ## Application Shell
 
-`src/app/layout.tsx` is the root layout. It:
+`src/app/layout.tsx` is the root layout. It imports Ant Design reset styles and global styles, loads the Lato font with `next/font/google`, defines metadata, wraps pages with `AntdRegistry`, and renders `Providers`.
 
-- imports `antd/dist/reset.css`;
-- imports `src/app/globals.css`;
-- loads the Lato font with `next/font/google`;
-- defines global metadata and favicon;
-- wraps all pages with `AntdRegistry`;
-- renders the shared `Providers` component.
-
-`src/app/providers.tsx` is a client component that creates a React Query `QueryClient`. Default query behavior:
-
-- `retry: 1`
-- `refetchOnWindowFocus: false`
-- `staleTime: 5 minutes`
-
-It also wraps the app with `StoreWrapper` from `src/store/provider.tsx`, making MobX stores available to client components.
+`src/app/providers.tsx` is a client component that creates the React Query `QueryClient` and wraps the app with `StoreWrapper`.
 
 ## Static Assets
 
-Static files live in `public` and are served from the site root. Do not include `public` in the runtime URL.
+Static files live in `public` and are served from the site root. Do not include `public` in runtime URLs.
 
 Examples:
 
 - `public/favicon.png` is available as `/favicon.png`.
-- `public/GROUSE-FAVICON_800-round.png` is available as `/GROUSE-FAVICON_800-round.png`.
 - `public/assets/icons/icon-chef.png` is available as `/assets/icons/icon-chef.png`.
 - `public/assets/logo/GMR_logo_black.png` is available as `/assets/logo/GMR_logo_black.png`.
-- `public/assets/logo/GMR_logo_white.png` is available as `/assets/logo/GMR_logo_white.png`.
 - `public/assets/ingredients/BeefPatty.png` is available as `/assets/ingredients/BeefPatty.png`.
 
-Use root-relative paths in JSX, CSS, and data objects:
-
-```tsx
-<img src="/assets/logo/GMR_logo_black.png" alt="Grouse Mountain Resort" />
-```
-
-```css
-.ingredient-card {
-  background-image: url("/assets/ingredients/BeefPatty.png");
-}
-```
-
-For images rendered through `next/image`, pass the same root-relative path to `src`.
-
-Asset groups:
-
-- Root files contain favicons and default Next.js template SVG files.
-- `assets/logo` contains Grouse Mountain Resort logo images.
-- `assets/icons` contains reusable icon images.
-- `assets/ingredients` contains ingredient PNG images used by the training UI.
-
-## Feature Modules
-
-Feature-specific UI, data helpers, and styles are grouped under `src/features`.
-
-### `features/home`
-
-Owns the home page UI component. It accepts `lang: string` and currently links to `/${lang}/training`.
-
-Key files:
-
-- `HomePage.tsx`
-- `HomePage.Styles.scss`
-
-Current limitation: this feature is not mounted by an App Router page.
-
-### `features/training`
-
-Owns the training game UI and static recipe/ingredient data.
-
-Key files:
-
-- `TrainingPage.tsx`
-- `TrainingPage.Styles.scss`
-- `data/trainingData.ts`
-
-The training UI is client-side, uses Ant Design `Carousel` and `Modal`, renders ingredient images through `next/image`, and checks selected ingredients against a randomly chosen recipe.
-
-Current limitation: this feature is not mounted by an App Router page.
+Use root-relative paths in JSX, CSS, data objects, and `next/image`.
 
 ## Components
 
-### `components/Ui/UiModals`
+Reusable components live under `src/components`.
 
-`UiModalRoot.tsx` is mounted once from `src/app/providers.tsx` and renders the active app-wide modal through Ant Design `Modal`.
+`components/layout/Header` renders the Grouse Mountain logo and `EN`/`FR` language switcher. It is mounted from `src/app/[lang]/layout.tsx`.
 
-The modal architecture uses a component registry:
-
-- `src/store/reducers/modalStore.ts` stores only serializable modal state: `activeModal`, typed `modalProps`, and simple `modalOptions`.
-- `ModalRegistry.tsx` maps modal IDs such as `RECIPE_DETAIL`, `AI_CHAT_ASSISTANT`, `SHIFT_REPORT_PREVIEW`, and `TEST_MODAL` to lazily loaded body components with `next/dynamic`.
-- Modal body components live in `components/Ui/UiModals/bodies` and receive their data through typed props.
-
-Open app-wide modals through `modalStore.openModal(type, props, options)`. Keep React components, JSX nodes, and callbacks out of the store; add a new registry entry and typed props when a new modal body is needed.
-
-### `components/layout/Header`
-
-`Header.tsx` is a client component that renders the Grouse Mountain logo and an `EN`/`FR` language switcher. It uses `usePathname` and `useRouter` from `next/navigation` to replace the current locale segment in the path.
-
-Active styling is in `Header.Styles.scss`. `Header.module.css` exists but is not imported by `Header.tsx`.
-
-Current limitation: this component is not mounted by an App Router layout or page.
+`components/Ui/UiModals` contains the app-wide modal registry and modal shell. It is mounted once from `src/app/providers.tsx`.
 
 ## API Layer
 
-All shared API setup should live under `src/api`.
+Shared API setup lives under `src/api`.
 
-`src/api/apiClient.ts` creates the shared Axios instance.
+`src/api/apiClient.ts` creates the shared Axios instance with:
 
-Current base URL:
-
-```txt
-placeholderForBaseURL
-```
-
-Current shared headers:
-
-- `Accept: application/json`
-- `Content-Type: application/json`
+- `baseURL = "placeholderForBaseURL"`
+- JSON headers
 - `X-Nesto-Candidat: Artem`
+- `timeout: 25000`
 
-Current timeout:
+Feature-specific API modules should live under `src/features/<feature>/api` when they are business-specific. Cross-feature API client configuration stays in `src/api`.
 
-```txt
-25000 ms
-```
+## State And Data
 
-There are no current feature API modules such as `productsApi.ts` or `applicationsApi.ts`. Add typed API modules under `src/api` when features need remote data.
-
-## Data Fetching
-
-Client-side server state is handled through React Query. The `QueryClientProvider` is installed in `src/app/providers.tsx`.
-
-There are no active React Query hooks or query keys in the current source tree.
-
-When adding queries or mutations, keep API calls in `src/api`, wrap feature-specific query hooks in the relevant `src/features/<feature>/hooks` folder, and invalidate the smallest relevant query key.
-
-## Client UI State
+Client-side server state is handled through React Query in `src/app/providers.tsx`.
 
 Client-only UI state is handled through MobX under `src/store`.
 
 Current store layout:
 
-- `src/store/reducers/modalStore.ts` owns modal state.
-- `src/store/combineReducers.ts` combines store instances into `RootStore`.
-- `src/store/provider.tsx` exposes `RootStore` through React context.
-- `src/store/hooks/useStores.ts` exposes the `useStores` hook.
-
-Current `modalStore` state:
-
-- `activeModal`: app-wide modal identifier.
-- `modalProps`: typed data passed to the active modal body.
-- `modalOptions`: simple Ant Design shell options such as `title`, `width`, and close behavior.
-- `isOpen`: computed flag derived from `activeModal`.
-
-Current `modalStore` actions:
-
-- `openModal(type, props, options?)`
-- `closeModal()`
-- `setModalProps(props)`
-
-`useStores.ts` currently returns `useContext(StoreContext)`. `StoreContext` is created with `RootStore` as its default value, so the hook returns the root store object even outside `StoreWrapper`.
+- `src/store/reducers/modalStore.ts`
+- `src/store/combineReducers.ts`
+- `src/store/provider.tsx`
+- `src/store/hooks/useStores.ts`
 
 When using observable store values inside React components, wrap the component with `observer` from `mobx-react-lite`.
 
@@ -308,48 +217,16 @@ When using observable store values inside React components, wrap the component w
 
 i18n utilities are handled locally under `src/i18n`.
 
-Supported locales are defined in `src/i18n/config.ts`:
+Supported locales:
 
 - `en`
 - `fr`
 
-The default locale is `en`.
-
-`getDictionary(locale)` returns the matching dictionary from `src/i18n/dictionaries`. Dictionary shape is inferred from the English dictionary through `Dictionary = typeof en`.
-
-Current limitation: dictionaries still contain mortgage/application/product copy from an earlier domain, and no localized App Router pages currently consume them.
-
-When adding user-facing text, update both `en.ts` and `fr.ts` and pass dictionary entries through route or feature props.
-
-## Types
-
-Shared domain types live in `src/types`.
-
-- `types/products.ts` contains product domain types from the earlier mortgage product flow.
-- `types/applications.ts` contains application and application-creation types from the earlier mortgage application flow.
-
-Current limitation: these types are not used by active route files or feature modules.
-
-## Styling
-
-Global styles live in:
-
-- `src/app/globals.css`
-- `src/styles/tokens.css`
-
-Component and feature styles currently use SCSS files with BEM-style class names, for example:
-
-- `Header.Styles.scss`
-- `HomePage.Styles.scss`
-- `TrainingPage.Styles.scss`
-
-`Header.module.css` is present but unused.
-
-Prefer existing local styling patterns before introducing a new approach. Keep reusable design tokens in `tokens.css` when values are shared across features.
+The default locale is `en`. When adding user-facing localized text, update both `src/i18n/dictionaries/en.ts` and `src/i18n/dictionaries/fr.ts`.
 
 ## Imports
 
-The TypeScript path alias is configured in `tsconfig.json`:
+Use the `@/*` TypeScript path alias for imports from `src` when it improves readability.
 
 ```json
 {
@@ -361,17 +238,13 @@ The TypeScript path alias is configured in `tsconfig.json`:
 }
 ```
 
-Use `@/*` for imports from `src` when it improves readability.
-
 ## Testing
 
-Vitest is configured through the project dependencies and `npm test` script.
+Vitest is configured through the `npm test` script.
 
-There are no current test files in `src`.
+For utility functions, data-shaping behavior, or business rules, add focused tests near the code under test. The training recipe helpers are covered in `src/features/training/lib/trainingRecipe.test.ts`.
 
-For new utility functions, data-shaping behavior, or business rules, add focused Vitest tests near the code under test.
-
-## Build And Verification
+## Verification
 
 Common commands:
 
@@ -384,15 +257,5 @@ npm test
 
 Recommended verification:
 
-- Do not run `npm run lint` or `npm run build` unless the user explicitly asks for it.
-- When implementation is complete, tell the user that build and lint can be checked.
+- Do not run `npm run lint` or `npm run build` unless explicitly requested.
 - Run `npm test` after utility, validation, or data logic changes.
-
-## Change Guidelines
-
-- Read the relevant bundled Next.js docs before modifying Next.js APIs or conventions.
-- Keep route files thin; delegate UI and behavior to `src/features`.
-- Keep API access in `src/api`; keep components focused on rendering and user interaction.
-- Keep shared domain contracts in `src/types`.
-- Keep localized text in dictionaries, not hard-coded inside reusable components.
-- Preserve the existing feature-based structure unless a cross-cutting abstraction is clearly needed.

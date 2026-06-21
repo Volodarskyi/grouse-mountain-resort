@@ -1,4 +1,4 @@
-import { TrainingPage } from "@/features/training/TrainingPage";
+import { TrainingPage } from "@/pages/TrainingPage/TrainingPage";
 
 const Page = () => {
     return <TrainingPage />;

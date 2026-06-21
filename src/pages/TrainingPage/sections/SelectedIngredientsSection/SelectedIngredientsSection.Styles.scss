@@ -1,0 +1,405 @@
+.training-selected-section {
+  &__selected {
+    margin-bottom: 12px;
+  }
+
+  &__selection-tray {
+    height: 486px;
+    padding: 4px;
+
+    border: 2px dashed var(--color-primary);
+    border-radius: 12px;
+
+    background: rgba(255, 255, 255, 0.58);
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    -webkit-overflow-scrolling: touch;
+  }
+
+  &__placeholder {
+    min-height: 94px;
+
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    color: var(--color-text-secondary);
+  }
+
+  &__placeholder-icon {
+    width: 44px;
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: rgba(130, 0, 36, 0.08);
+    color: var(--color-primary);
+
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  &__placeholder-content {
+    flex: 1;
+  }
+
+  &__placeholder-lines {
+    margin-top: 10px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    span {
+      display: block;
+      height: 8px;
+
+      border-radius: 999px;
+      background: rgba(182, 174, 174, 0.22);
+
+      &:nth-child(1) {
+        width: 82%;
+      }
+
+      &:nth-child(2) {
+        width: 62%;
+      }
+
+      &:nth-child(3) {
+        width: 42%;
+      }
+    }
+  }
+
+  &__burger-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  &__empty {
+    color: var(--color-text-secondary);
+
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  &__selected-layer {
+    position: relative;
+
+    padding: 0;
+    margin: 0;
+
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    border: none;
+    border-radius: 0;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 800;
+    text-align: left;
+
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      transform: none;
+    }
+
+    &:active {
+      opacity: 0.7;
+    }
+
+    &--wrong {
+      color: #991b1b;
+
+      &::after {
+        content: "";
+
+        position: absolute;
+        inset: 0;
+
+        background: rgba(220, 38, 38, 0.18);
+
+        pointer-events: none;
+      }
+    }
+  }
+
+  &__selected-image {
+    flex-shrink: 0;
+
+    width: 42px;
+    height: 42px;
+
+    object-fit: contain;
+  }
+
+  &__missing {
+    margin-top: 8px;
+  }
+
+  &__feedback-title {
+    margin-bottom: 10px;
+
+    font-size: 16px;
+    font-weight: 800;
+    color: #166534;
+  }
+
+  &__missing-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__missing-item {
+    padding: 10px 14px;
+
+    border-radius: 12px;
+
+    background: #dcfce7;
+    color: #166534;
+
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  &__result {
+    margin-bottom: 20px;
+
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--color-primary);
+  }
+
+  &__answer {
+    margin-top: 24px;
+    padding: 16px;
+
+    border: 2px solid var(--color-border);
+    border-radius: 20px;
+
+    background: var(--color-white);
+  }
+
+  &__section-title {
+    margin-bottom: 4px;
+
+    font-size: 16px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-secondary);
+  }
+
+  &__answer-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__answer-item {
+    min-height: 56px;
+    padding: 8px 12px;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    border-radius: 14px;
+
+    background: rgba(130, 0, 36, 0.06);
+
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  &__answer-image {
+    width: 44px;
+    height: 44px;
+
+    flex-shrink: 0;
+
+    object-fit: contain;
+  }
+
+  &__check-list {
+    max-height: 56vh;
+    margin-bottom: 18px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    overflow-y: auto;
+
+    -webkit-overflow-scrolling: touch;
+  }
+
+  &__check-item {
+    position: relative;
+
+    min-height: 58px;
+    padding: 8px 12px;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    border-radius: 14px;
+
+    background: rgba(130, 0, 36, 0.06);
+
+    overflow: hidden;
+
+    font-size: 15px;
+    font-weight: 800;
+
+    &--wrong {
+      color: #991b1b;
+
+      &::after {
+        content: "";
+
+        position: absolute;
+        inset: 0;
+
+        background: rgba(220, 38, 38, 0.18);
+
+        pointer-events: none;
+      }
+    }
+
+    &--missing {
+      color: #166534;
+
+      &::after {
+        content: "";
+
+        position: absolute;
+        inset: 0;
+
+        background: rgba(34, 197, 94, 0.22);
+
+        pointer-events: none;
+      }
+    }
+  }
+
+  &__check-image {
+    width: 44px;
+    height: 44px;
+
+    flex-shrink: 0;
+
+    object-fit: contain;
+
+    background: transparent;
+    mix-blend-mode: multiply;
+
+    position: relative;
+    z-index: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .training-selected-section {
+    &__section-title {
+      font-size: 12px;
+    }
+
+    &__selection-tray {
+      height: 384px;
+      padding: 4px;
+
+      border: 2px dotted var(--color-primary);
+      border-radius: 12px;
+
+      background: rgba(255, 255, 255, 0.58);
+
+      overflow-y: auto;
+      overflow-x: hidden;
+
+      -webkit-overflow-scrolling: touch;
+    }
+
+    &__selected-layer {
+      padding: 0;
+      margin: 0;
+
+      gap: 14px;
+
+      font-size: 16px;
+    }
+
+    &__check-list {
+      max-height: 58vh;
+    }
+
+    &__check-item {
+      position: relative;
+
+      min-height: 58px;
+      padding: 8px 12px;
+
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      border-radius: 14px;
+
+      background: rgba(130, 0, 36, 0.06);
+
+      overflow: hidden;
+
+      font-size: 15px;
+      font-weight: 800;
+
+      &::before {
+        content: "";
+
+        position: absolute;
+        inset: 0;
+
+        pointer-events: none;
+        z-index: 2;
+
+        background: transparent;
+      }
+
+      span {
+        position: relative;
+        z-index: 3;
+      }
+
+      &--wrong {
+        color: #991b1b;
+
+        &::before {
+          background: rgba(220, 38, 38, 0.18);
+        }
+      }
+
+      &--missing {
+        color: #166534;
+
+        &::before {
+          background: rgba(34, 197, 94, 0.22);
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,53 @@
+.training-bottom-actions-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+
+  padding: 16px 20px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+
+  background: var(--color-primary);
+
+  &__button {
+    height: 56px;
+
+    border: 2px solid white;
+    border-radius: 999px;
+
+    background: rgba(207, 44, 90, 0.9);
+    color: var(--color-white);
+
+    cursor: pointer;
+
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: 800;
+
+    transition:
+            opacity 0.2s ease,
+            transform 0.2s ease;
+
+    &:active {
+      opacity: 0.85;
+      transform: scale(0.98);
+    }
+
+    &--secondary {
+      background: var(--color-white);
+      color: var(--color-text-secondary);
+      border: 2px solid var(--color-text-secondary);
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .training-bottom-actions-section {
+    padding-left: 16px;
+    padding-right: 16px;
+
+    &__button {
+      height: 54px;
+      font-size: 17px;
+    }
+  }
+}
