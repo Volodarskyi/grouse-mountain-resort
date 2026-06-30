@@ -1,248 +1,175 @@
 # Project Architecture
 
-This document describes the current architecture of the Grouse Mountain Resort application.
+This document describes the current architecture of the Horecan AI application.
 
 ## Overview
 
 The app is a Next.js `16.2.6` project using the App Router, React `19.2.4`, TypeScript, React Query, MobX, Axios, Ant Design, global CSS, and SCSS.
 
-Routing lives only in `src/app`. Business page containers live in `src/pages`. Page-specific UI sections live under their owning page. Business data and logic live in `src/features`.
+The project uses one routing standard:
 
-## Runtime Stack
+```txt
+/org
+/org/[organizationSlug]
+/org/[organizationSlug]/location/[locationSlug]
+/org/[organizationSlug]/location/[locationSlug]/training
+/org/[organizationSlug]/location/[locationSlug]/orders
+/org/[organizationSlug]/location/[locationSlug]/kitchen
+/org/[organizationSlug]/location/[locationSlug]/menu
+/org/[organizationSlug]/location/[locationSlug]/recipes
+/org/[organizationSlug]/location/[locationSlug]/inventory
+/org/[organizationSlug]/location/[locationSlug]/employees
+/org/[organizationSlug]/location/[locationSlug]/reports
+/org/[organizationSlug]/location/[locationSlug]/settings
+```
 
-- Framework: Next.js `16.2.6`
-- UI runtime: React `19.2.4` and React DOM `19.2.4`
-- Language: TypeScript with `strict` enabled
-- Data fetching cache: `@tanstack/react-query`
-- Client UI state: MobX with `mobx-react-lite`
-- UI library: Ant Design `6.4.3`
-- HTTP client: Axios
-- Forms: `react-hook-form`
-- Validation: Zod
-- Styling: global CSS and SCSS
-- Tests: Vitest, Testing Library, and jsdom
+Do not use query parameters for organization or location. URLs always use slugs, never Mongo ObjectIds.
+
+## Domain Model
+
+```txt
+Organization
+  -> Location
+    -> Modules
+```
+
+Mongo documents should expose:
+
+```txt
+_id
+slug
+name
+```
+
+Route modules receive:
+
+```txt
+organizationSlug
+locationSlug
+```
+
+The API shape should follow the same nested route convention:
+
+```txt
+/api/org/[organizationSlug]/location/[locationSlug]/training
+```
+
+The API resolves slugs to Mongo `_id` values internally before querying module data.
+
+## Seeded Organization
+
+The first seeded organization is `Grouse Mountain Resort`:
+
+```txt
+organization.slug = "grouse-mountain"
+```
+
+Locations:
+
+- `rusty-rail`: Rusty Rail
+- `altitudes-bistro`: Altitudes Bistro
+- `the-observatory`: The Observatory
+- `lupins`: Lupin's Cafe
+
+Example URLs:
+
+```txt
+/org/grouse-mountain
+/org/grouse-mountain/location/rusty-rail
+/org/grouse-mountain/location/lupins/training
+```
 
 ## Source Layout
 
 ```txt
 src/
-  api/
-    apiClient.ts
   app/
-    globals.css
+    org/
+      page.tsx
+      [organizationSlug]/
+        page.tsx
+        location/
+          [locationSlug]/
+            layout.tsx
+            page.tsx
+            training/page.tsx
+            orders/page.tsx
+            kitchen/page.tsx
+            menu/page.tsx
+            recipes/page.tsx
+            inventory/page.tsx
+            employees/page.tsx
+            reports/page.tsx
+            settings/page.tsx
     layout.tsx
     page.tsx
     providers.tsx
-    [lang]/
-      layout.tsx
-      page.tsx
-      training/
-        page.tsx
-  pages/
+    globals.css
+  views/
     HomePage/
-      HomePage.tsx
-      HomePage.Styles.scss
-      sections/
-        HeroSection/
-          HeroSection.tsx
-          HeroSection.Styles.scss
-        MenuSection/
-          MenuSection.tsx
-          MenuSection.Styles.scss
     TrainingPage/
-      TrainingPage.tsx
-      TrainingPage.Styles.scss
-      sections/
-        HeaderSection/
-          HeaderSection.tsx
-          HeaderSection.Styles.scss
-        SelectedIngredientsSection/
-          SelectedIngredientsSection.tsx
-          SelectedIngredientsSection.Styles.scss
-        IngredientsSliderSection/
-          IngredientsSliderSection.tsx
-          IngredientsSliderSection.Styles.scss
-        BottomActionsSection/
-          BottomActionsSection.tsx
-          BottomActionsSection.Styles.scss
   features/
-    training/
-      model/
-        trainingData.ts
+    tenancy/
       lib/
-        trainingRecipe.ts
-        trainingRecipe.test.ts
-  components/
-  i18n/
-  store/
-  styles/
-  types/
+      model/
+    training/
+      lib/
+      model/
 ```
 
-## Routing
+## App Router Rules
 
-Routes are defined with the App Router under `src/app`.
+Routes live under `src/app`.
 
-- `/` is handled by `src/app/page.tsx` and redirects to `/${defaultLocale}`.
-- `/${lang}` is handled by `src/app/[lang]/page.tsx` and renders `src/pages/HomePage/HomePage.tsx`.
-- `/${lang}/training` is handled by `src/app/[lang]/training/page.tsx` and renders `src/pages/TrainingPage/TrainingPage.tsx`.
-- `src/app/[lang]/layout.tsx` validates the locale, loads the dictionary, and mounts the shared `Header`.
+Route files stay thin:
 
-Keep route files thin. They should validate route params, load route-level data when needed, and delegate UI to `src/pages`.
+- Read `params` with `await params`.
+- Validate organization and location slugs.
+- Delegate UI and business logic to `src/views` or `src/features`.
 
-Important Next.js 16 convention in this project: before changing route APIs, read the relevant version-matched docs in `node_modules/next/dist/docs/`.
+`src/app/org/[organizationSlug]/location/[locationSlug]/layout.tsx` loads and validates organization/location once for the location workspace and renders the module navigation.
 
-## Pages And Sections
-
-Business page containers live in `src/pages`.
-
-Sections belong to pages. Do not create `src/sections`.
-
-Use this structure:
-
-```txt
-src/pages/
-  HomePage/
-    HomePage.tsx
-    HomePage.Styles.scss
-    sections/
-      HeroSection/
-      MenuSection/
-  TrainingPage/
-    TrainingPage.tsx
-    TrainingPage.Styles.scss
-    sections/
-      HeaderSection/
-      SelectedIngredientsSection/
-      IngredientsSliderSection/
-      BottomActionsSection/
-```
-
-Each section must own its own SCSS file. Page-level SCSS should contain only page shell styles and layout concerns that do not belong to a specific section.
-
-Page-specific UI stays in page sections. Business logic stays in features. Generic reusable UI stays in `src/components` or a future shared component folder.
+Important Next.js 16 convention in this project: before changing route APIs, read the version-matched docs in `node_modules/next/dist/docs/`.
 
 ## Features
 
-Business logic belongs to `src/features`.
+Business logic belongs under `src/features`.
 
 Preferred feature structure:
 
 ```txt
 features/
+  tenancy/
+    model/
+    api/
+    lib/
   training/
     model/
     api/
     lib/
     components/
-  menu/
-    model/
-    api/
-    lib/
-    components/
   orders/
-    model/
-    api/
-    lib/
-    components/
-  auth/
-    model/
-    api/
-    lib/
+  kitchen/
+  menu/
+  recipes/
+  inventory/
+  employees/
+  reports/
+  settings/
 ```
 
-Current active feature:
+Current active features:
 
+- `features/tenancy/model/tenancyData.ts` stores temporary organization and location seed data.
+- `features/tenancy/lib/tenancy.ts` stores organization/location lookup helpers.
 - `features/training/model/trainingData.ts` stores ingredient and recipe data.
-- `features/training/lib/trainingRecipe.ts` stores training business helpers such as recipe selection and ingredient chunking.
+- `features/training/lib/trainingRecipe.ts` stores training business helpers.
 
-The training UI is one page section group under `src/pages/TrainingPage/sections`; it should not be placed back under `features/training`.
+## Views
 
-## Application Shell
+Business page containers live in `src/views`.
 
-`src/app/layout.tsx` is the root layout. It imports Ant Design reset styles and global styles, loads the Lato font with `next/font/google`, defines metadata, wraps pages with `AntdRegistry`, and renders `Providers`.
-
-`src/app/providers.tsx` is a client component that creates the React Query `QueryClient` and wraps the app with `StoreWrapper`.
-
-## Static Assets
-
-Static files live in `public` and are served from the site root. Do not include `public` in runtime URLs.
-
-Examples:
-
-- `public/favicon.png` is available as `/favicon.png`.
-- `public/assets/icons/icon-chef.png` is available as `/assets/icons/icon-chef.png`.
-- `public/assets/logo/GMR_logo_black.png` is available as `/assets/logo/GMR_logo_black.png`.
-- `public/assets/ingredients/BeefPatty.png` is available as `/assets/ingredients/BeefPatty.png`.
-
-Use root-relative paths in JSX, CSS, data objects, and `next/image`.
-
-## Components
-
-Reusable components live under `src/components`.
-
-`components/layout/Header` renders the Grouse Mountain logo and `EN`/`FR` language switcher. It is mounted from `src/app/[lang]/layout.tsx`.
-
-`components/Ui/UiModals` contains the app-wide modal registry and modal shell. It is mounted once from `src/app/providers.tsx`.
-
-## API Layer
-
-Shared API setup lives under `src/api`.
-
-`src/api/apiClient.ts` creates the shared Axios instance with:
-
-- `baseURL = "placeholderForBaseURL"`
-- JSON headers
-- `X-Nesto-Candidat: Artem`
-- `timeout: 25000`
-
-Feature-specific API modules should live under `src/features/<feature>/api` when they are business-specific. Cross-feature API client configuration stays in `src/api`.
-
-## State And Data
-
-Client-side server state is handled through React Query in `src/app/providers.tsx`.
-
-Client-only UI state is handled through MobX under `src/store`.
-
-Current store layout:
-
-- `src/store/reducers/modalStore.ts`
-- `src/store/combineReducers.ts`
-- `src/store/provider.tsx`
-- `src/store/hooks/useStores.ts`
-
-When using observable store values inside React components, wrap the component with `observer` from `mobx-react-lite`.
-
-## Internationalization
-
-i18n utilities are handled locally under `src/i18n`.
-
-Supported locales:
-
-- `en`
-- `fr`
-
-The default locale is `en`. When adding user-facing localized text, update both `src/i18n/dictionaries/en.ts` and `src/i18n/dictionaries/fr.ts`.
-
-## Imports
-
-Use the `@/*` TypeScript path alias for imports from `src` when it improves readability.
-
-```json
-{
-  "compilerOptions": {
-    "paths": {
-      "@/*": ["./src/*"]
-    }
-  }
-}
-```
-
-## Testing
-
-Vitest is configured through the `npm test` script.
-
-For utility functions, data-shaping behavior, or business rules, add focused tests near the code under test. The training recipe helpers are covered in `src/features/training/lib/trainingRecipe.test.ts`.
+Do not put business page containers in `src/pages`; Next.js treats `src/pages` as Pages Router.
 
 ## Verification
 
@@ -255,7 +182,7 @@ npm run lint
 npm test
 ```
 
-Recommended verification:
+Project rule:
 
 - Do not run `npm run lint` or `npm run build` unless explicitly requested.
 - Run `npm test` after utility, validation, or data logic changes.

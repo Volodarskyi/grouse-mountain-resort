@@ -8,6 +8,7 @@ import {
     Recipe,
     getIngredientsByCodes,
     ingredientSlideOrderByMenu,
+    recipes,
 } from "@/features/training/model/trainingData";
 import {
     chunkIngredients,
@@ -24,7 +25,7 @@ import "./TrainingPage.Styles.scss";
 const INGREDIENTS_PER_SLIDE = 8;
 
 export const TrainingPage = () => {
-    const [recipe, setRecipe] = useState<Recipe>(getRandomRecipe);
+    const [recipe, setRecipe] = useState<Recipe>(recipes[0]);
     const [selectedIngredients, setSelectedIngredients] = useState<Ingredient[]>([]);
     const [result, setResult] = useState("");
     const [showAnswer, setShowAnswer] = useState(false);

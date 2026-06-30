@@ -9,9 +9,10 @@ import "./HomePage.Styles.scss";
 
 type HomePageProps = {
     lang: string;
+    basePath?: string;
 };
 
-export const HomePage = ({ lang }: HomePageProps) => {
+export const HomePage = ({ lang, basePath }: HomePageProps) => {
     const { modalStore } = useStores();
 
     const handleOpenTestModal = () => {
@@ -31,7 +32,7 @@ export const HomePage = ({ lang }: HomePageProps) => {
     return (
         <main className="home-page">
             <HeroSection onOpenTestModal={handleOpenTestModal} />
-            <MenuSection lang={lang} />
+            <MenuSection lang={lang} basePath={basePath} />
         </main>
     );
 };
