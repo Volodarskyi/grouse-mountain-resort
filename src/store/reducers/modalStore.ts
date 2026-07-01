@@ -42,6 +42,10 @@ export type ModalOptions = {
     maskClosable?: boolean;
     keyboard?: boolean;
     className?: string;
+    cancelText?: string;
+    confirmText?: string;
+    onCancel?: () => void;
+    onConfirm?: () => void;
 };
 
 class ModalStore {

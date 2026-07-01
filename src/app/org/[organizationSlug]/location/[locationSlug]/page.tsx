@@ -19,5 +19,11 @@ export default async function LocationPage({ params }: LocationPageProps) {
         notFound();
     }
 
-    return <HomePage lang={defaultLocale} basePath={`/org/${organizationSlug}/location/${locationSlug}`} />;
+    return (
+        <HomePage
+            lang={defaultLocale}
+            basePath={`/org/${organizationSlug}/location/${locationSlug}`}
+            title={tenant.location.name}
+        />
+    );
 }
