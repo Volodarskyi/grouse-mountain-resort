@@ -1,23 +1,21 @@
 @import "../styles/tokens.css";
 
 :root {
-  /*--color-primary: #212243;*/
-  --color-primary: #820024;
-  /*--color-secondary: #f9423a;*/
-  --color-secondary: #414040;
+  --color-primary: var(--color_primary-500);
+  --color-secondary: var(--color_secondary-500);
   --color-accent: #f2b90c;
   --color-active: #2841cf;
-  --color-disabled: #dad8d8;
+  --color-disabled: var(--color_neutral-300);
 
   --color-white: #ffffff;
 
   --color-background: rgba(248, 248, 248, 1);
-  --color-surface: #f7f7f7;
+  --color-surface: var(--color_neutral-100);
 
-  --color-text-primary: #171717;
-  --color-text-secondary: #b6aeae;
+  --color-text-primary: var(--color_neutral-900);
+  --color-text-secondary: var(--color_neutral-500);
 
-  --color-border: #e5e5e5;
+  --color-border: var(--color_neutral-200);
 
   --font-primary: "Lato", Arial, Helvetica, sans-serif;
 }

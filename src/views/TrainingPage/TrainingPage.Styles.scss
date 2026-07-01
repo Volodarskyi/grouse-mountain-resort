@@ -12,9 +12,9 @@
     background: var(--color-background);
   }
 
-  &__check-modal {
+    &__check-modal {
     .ant-modal-content {
-      border-radius: 22px;
+      border-radius: var(--border-radius_16);
     }
 
     .ant-modal-header {
@@ -56,9 +56,9 @@
     height: 54px;
 
     border: 2px solid var(--color-primary);
-    border-radius: 999px;
+    border-radius: var(--radius-full);
 
-    background: rgba(207, 44, 90, 0.9);
+    background: var(--color_primary-300);
     color: var(--color-white);
 
     cursor: pointer;

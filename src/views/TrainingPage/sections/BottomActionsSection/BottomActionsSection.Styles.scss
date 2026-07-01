@@ -12,9 +12,9 @@
     height: 56px;
 
     border: 2px solid white;
-    border-radius: 999px;
+    border-radius: var(--radius-full);
 
-    background: rgba(207, 44, 90, 0.9);
+    background: var(--color_primary-300);
     color: var(--color-white);
 
     cursor: pointer;

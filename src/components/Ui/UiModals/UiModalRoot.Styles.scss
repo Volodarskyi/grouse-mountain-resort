@@ -1,6 +1,6 @@
 .app-modal {
     .ant-modal-content {
-        border-radius: 8px;
+        border-radius: var(--border-radius_8);
         padding: 24px;
     }
 
@@ -40,7 +40,7 @@
 
 .app-modal-body__meta {
     border: 1px solid var(--color-border);
-    border-radius: 8px;
+    border-radius: var(--border-radius_8);
     background: var(--color-surface);
     padding: 12px;
     color: var(--color-secondary);

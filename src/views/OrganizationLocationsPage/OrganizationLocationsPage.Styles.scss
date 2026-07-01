@@ -37,7 +37,7 @@
     overflow: hidden;
 
     background: var(--color-primary);
-    border-radius: 16px;
+    border-radius: var(--border-radius_16);
     box-shadow: 6px 8px 11px 0 rgba(0, 0, 0, 0.34);
 
     transition:

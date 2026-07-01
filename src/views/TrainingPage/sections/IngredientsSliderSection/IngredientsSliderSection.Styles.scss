@@ -29,7 +29,7 @@
     justify-content: center;
 
     border: 2px solid var(--color-border);
-    border-radius: 14px;
+    border-radius: var(--border-radius_16);
 
     background: var(--color-white);
     overflow: hidden;
@@ -137,14 +137,14 @@
           position: absolute;
           inset: 0;
 
-          border-radius: 999px;
+          border-radius: var(--radius-full);
           background: var(--color-primary) !important;
 
           pointer-events: none;
         }
 
         &.slick-active::after {
-          background: rgba(207, 44, 90, 1) !important;
+          background: var(--color_primary-300) !important;
         }
       }
     }
@@ -167,7 +167,7 @@
     &__ingredient {
       height: 84px;
       padding: 2px;
-      border-radius: 14px;
+      border-radius: var(--border-radius_16);
     }
 
     &__ingredient-image {
