@@ -1,0 +1,104 @@
+.organization-locations-page {
+  min-height: calc(100vh - 96px);
+  padding: 56px 32px;
+
+  &__hero {
+    max-width: 1120px;
+    margin: 0 auto 32px;
+  }
+
+  &__eyebrow {
+    margin-bottom: 8px;
+
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-primary);
+    text-transform: uppercase;
+  }
+
+  &__title {
+    font-size: 54px;
+    line-height: 1.05;
+    font-weight: 900;
+  }
+
+  &__grid {
+    max-width: 1120px;
+    margin: 0 auto;
+
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+  }
+
+  &__card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    background: var(--color-primary);
+    border-radius: var(--border-radius_16);
+    box-shadow: 6px 8px 11px 0 rgba(0, 0, 0, 0.34);
+
+    transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 8px 12px 18px 0 rgba(0, 0, 0, 0.38);
+    }
+  }
+
+  &__image-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: var(--color-secondary);
+  }
+
+  &__image {
+    object-fit: cover;
+  }
+
+  &__card-content {
+    width: 100%;
+    min-height: 104px;
+    padding: 20px 22px 22px;
+
+    background: var(--color-primary);
+    color: var(--color-white);
+  }
+
+  &__card-title {
+    margin-bottom: 6px;
+
+    color: var(--color-white);
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  &__card-text {
+    margin-bottom: 16px;
+
+    color: var(--color-white);
+    font-size: 15px;
+    line-height: 1.4;
+    opacity: 0.85;
+  }
+
+  &__card-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .organization-locations-page {
+    min-height: calc(100vh - 72px);
+    padding: 36px 20px;
+
+    &__title {
+      font-size: 32px;
+    }
+  }
+}

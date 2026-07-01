@@ -13,15 +13,16 @@ import './Header.Styles.scss';
 type HeaderProps = {
     lang: Locale;
     dictionary: Dictionary;
+    homeHref?: string;
 };
 
-export function Header({ lang }: HeaderProps) {
+export function Header({ lang, homeHref = "/org" }: HeaderProps) {
     const pathname = usePathname();
     const router = useRouter();
     const [activeLang, setActiveLang] = useState(lang);
 
     function handleLanguageChange(nextLang: "en" | "fr") {
-        if (nextLang === lang) return;
+        if (nextLang === lang || !pathname) return;
 
         setActiveLang(nextLang);
 
@@ -35,7 +36,7 @@ export function Header({ lang }: HeaderProps) {
     return (
         <header className="header">
             <Link
-                href={`/${lang}`}
+                href={homeHref}
                 className="header__logo"
                 aria-label="Grouse Mountain Resort"
             >

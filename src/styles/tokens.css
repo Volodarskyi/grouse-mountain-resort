@@ -10,9 +10,41 @@
     --space-48: 48px;
     --space-64: 64px;
 
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
-    --radius-xl: 24px;
+    --color_neutral-100: #f0efef;
+    --color_neutral-200: #e2dfdf;
+    --color_neutral-300: #d3cece;
+    --color_neutral-400: #c5bebe;
+    --color_neutral-500: #b6aeae;
+    --color_neutral-600: #928b8b;
+    --color_neutral-700: #6d6868;
+    --color_neutral-800: #494646;
+    --color_neutral-900: #242323;
+
+    --color_primary-100: #ec6087;
+    --color_primary-200: #d4426b;
+    --color_primary-300: #d62457;
+    --color_primary-400: #b8113f;
+    --color_primary-500: #820024;
+    --color_primary-600: #5d001a;
+    --color_primary-700: #450114;
+    --color_primary-800: #29000c;
+    --color_primary-900: #150006;
+
+    --color_secondary-100: #ccccd6;
+    --color_secondary-300: #666685;
+    --color_secondary-500: #000033;
+    --color_secondary-700: #00002a;
+    --color_secondary-900: #00000a;
+
+    --border-radius_4: 4px;
+    --border-radius_8: 8px;
+    --border-radius_16: 16px;
+    --border-radius_32: 32px;
+    --border-radius_48: 48px;
+
+    --radius-sm: var(--border-radius_8);
+    --radius-md: var(--border-radius_16);
+    --radius-lg: var(--border-radius_32);
+    --radius-xl: var(--border-radius_48);
     --radius-full: 999px;
 }
