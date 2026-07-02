@@ -9,7 +9,7 @@
   text-decoration: none;
 
   font-family: inherit;
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1;
 
   transition:
@@ -27,11 +27,22 @@
   }
 
   &--primary {
+    border-color: var(--color_primary-300);
     background: var(--color_primary-300);
     color: var(--color-white);
 
     &:hover {
       opacity: 0.94;
+    }
+  }
+
+  &--secondary {
+    border-color: var(--color_primary-300);
+    background: var(--color-white);
+    color: var(--color_primary-300);
+
+    &:hover {
+      background: rgba(214, 36, 87, 0.06);
     }
   }
 
