@@ -31,6 +31,7 @@ Do not use query parameters for organization or location. URLs always use slugs,
 Organization
   -> Location
     -> Modules
+  -> Users
 ```
 
 Mongo documents should expose:
@@ -55,6 +56,35 @@ The API shape should follow the same nested route convention:
 ```
 
 The API resolves slugs to Mongo `_id` values internally before querying module data.
+
+## Database
+
+MongoDB is connected on the server through `src/lib/mongodb.ts`. The active
+database is selected by `MONGODB_ENV`:
+
+```txt
+MONGODB_ENV=dev | demo | prod
+MONGODB_URI_DEV=...
+MONGODB_URI_DEMO=...
+MONGODB_URI_PROD=...
+```
+
+`MONGODB_URI` is still supported as a local fallback for `dev`. Do not expose
+database connection strings with `NEXT_PUBLIC_`.
+
+Active Mongo models:
+
+- `features/users/model/User.ts` stores application users.
+
+User documents include `firstName`, `secondName`, `phone`, unique lowercase
+`email`, hashed `password`, optional `role`, optional organization/location/
+department references, ranked `skills`, and `status`.
+
+User creation is exposed through:
+
+```txt
+POST /api/users
+```
 
 ## Seeded Organization
 
