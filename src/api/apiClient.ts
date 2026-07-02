@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseURL = 'placeholderForBaseURL';
+const baseURL = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
 
 export const apiClient = axios.create({
     baseURL: baseURL,
@@ -8,7 +8,6 @@ export const apiClient = axios.create({
     headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        "X-Nesto-Candidat": "Artem",
     },
 
     timeout: 25000,
