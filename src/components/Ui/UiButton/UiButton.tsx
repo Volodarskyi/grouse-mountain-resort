@@ -3,7 +3,7 @@ import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 import "./UiButton.Styles.scss";
 
-type UiButtonVariant = "primary";
+type UiButtonVariant = "primary" | "secondary";
 type UiButtonSize = "s" | "m" | "l";
 
 type UiButtonProps = {
