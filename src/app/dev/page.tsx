@@ -1,5 +1,6 @@
 import packageJson from "../../../package.json";
 import { DevCreateUserForm } from "./DevCreateUserForm";
+import { DevSeedPanel } from "./DevSeedPanel";
 import { DevUsersList } from "./DevUsersList";
 import "./DevPage.Styles.scss";
 
@@ -10,6 +11,7 @@ export default function DevPage() {
             <p className="dev-page__version">
                 Application version: {packageJson.version}
             </p>
+            <DevSeedPanel />
             <DevCreateUserForm />
             <DevUsersList />
         </main>

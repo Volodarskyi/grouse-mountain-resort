@@ -86,6 +86,14 @@ User creation is exposed through:
 POST /api/users
 ```
 
+Development seed data is exposed through:
+
+```txt
+POST /api/dev/seed
+```
+
+The seed endpoint upserts Grouse Mountain Resort and its initial locations.
+
 ## Seeded Organization
 
 The first seeded organization is `Grouse Mountain Resort`:
