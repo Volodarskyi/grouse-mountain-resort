@@ -1,12 +1,6 @@
 import { model, models, Schema, type InferSchemaType } from "mongoose";
 
-export const menuItemStations = [
-    "front_desk",
-    "grill",
-    "kitchen",
-    "bar",
-    "expo",
-] as const;
+import { menuItemStations, type MenuItemStation } from "./menuItemConstants";
 
 const menuItemSchema = new Schema(
     {
@@ -54,8 +48,8 @@ const menuItemSchema = new Schema(
     },
 );
 
-export type MenuItemStation = (typeof menuItemStations)[number];
 export type MenuItemDocument = InferSchemaType<typeof menuItemSchema>;
+export type { MenuItemStation };
 
 const MenuItemModel = models.MenuItem || model("MenuItem", menuItemSchema);
 

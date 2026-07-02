@@ -86,6 +86,22 @@ User creation is exposed through:
 POST /api/users
 ```
 
+Menu item creation is exposed through:
+
+```txt
+POST /api/menu-items
+```
+
+Menu module routes:
+
+```txt
+/org/[organizationSlug]/location/[locationSlug]/menu
+/org/[organizationSlug]/location/[locationSlug]/menu/create
+```
+
+The menu module resolves organization and location slugs to Mongo `_id`
+references before reading or creating `MenuItem` documents.
+
 Development seed data is exposed through:
 
 ```txt
