@@ -4,6 +4,7 @@ export const menuItemStations = [
     "kitchen",
     "bar",
     "expo",
+    "pizza",
 ] as const;
 
 export type MenuItemStation = (typeof menuItemStations)[number];

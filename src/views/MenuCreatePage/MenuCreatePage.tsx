@@ -5,35 +5,38 @@ import "./MenuCreatePage.Styles.scss";
 type MenuCreatePageProps = {
     currentLocationId?: string;
     currentOrganizationId?: string;
-    locationName: string;
-    menuHref: string;
-    organizationName: string;
-    organizations: Array<{
-        id: string;
-        name: string;
-        slug: string;
-    }>;
-    locations: Array<{
+    initialMenuItem?: {
         id: string;
         organizationId: string;
+        locationIds: string[];
+        groupId: string;
         name: string;
-        slug: string;
-    }>;
+        code: string;
+        station: string;
+        price: number;
+        isActive: boolean;
+    };
+    locationName: string;
+    menuHref: string;
+    mode?: "create" | "edit";
+    organizationName: string;
 };
 
 export function MenuCreatePage({
     currentLocationId,
     currentOrganizationId,
+    initialMenuItem,
     locationName,
-    locations,
     menuHref,
+    mode = "create",
     organizationName,
-    organizations,
 }: MenuCreatePageProps) {
     return (
         <main className="menu-create-page">
             <div className="menu-create-page__header">
-                <h1 className="menu-create-page__title">Create menu item</h1>
+                <h1 className="menu-create-page__title">
+                    {mode === "edit" ? "Edit menu item" : "Create menu item"}
+                </h1>
                 <p className="menu-create-page__subtitle">
                     {organizationName} / {locationName}
                 </p>
@@ -42,9 +45,9 @@ export function MenuCreatePage({
             <MenuCreateForm
                 currentLocationId={currentLocationId}
                 currentOrganizationId={currentOrganizationId}
-                locations={locations}
+                initialMenuItem={initialMenuItem}
                 menuHref={menuHref}
-                organizations={organizations}
+                mode={mode}
             />
         </main>
     );

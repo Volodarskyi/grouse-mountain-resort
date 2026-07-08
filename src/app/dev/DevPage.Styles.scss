@@ -30,6 +30,16 @@
   gap: 4px;
 }
 
+.dev-transfer {
+  display: grid;
+  gap: 4px;
+}
+
+.dev-transfer__actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
 @media (max-width: 640px) {
   .dev-section__header {
     align-items: flex-start;

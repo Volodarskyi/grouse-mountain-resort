@@ -4,6 +4,7 @@ export type ModalType =
     | "RECIPE_DETAIL"
     | "AI_CHAT_ASSISTANT"
     | "SHIFT_REPORT_PREVIEW"
+    | "CONFIRM_ACTION"
     | "TEST_MODAL";
 
 export type RecipeDetailModalProps = {
@@ -27,10 +28,16 @@ export type TestModalProps = {
     openedFrom: string;
 };
 
+export type ConfirmActionModalProps = {
+    message: string;
+    details?: string;
+};
+
 export type ModalPropsMap = {
     RECIPE_DETAIL: RecipeDetailModalProps;
     AI_CHAT_ASSISTANT: AiChatAssistantModalProps;
     SHIFT_REPORT_PREVIEW: ShiftReportPreviewModalProps;
+    CONFIRM_ACTION: ConfirmActionModalProps;
     TEST_MODAL: TestModalProps;
 };
 
