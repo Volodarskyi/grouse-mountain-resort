@@ -39,7 +39,9 @@ export default async function MenuModulePage({ params }: MenuModulePageProps) {
     return (
         <MenuPage
             addHref={`${basePath}/create`}
+            baseHref={basePath}
             locationName={menuData.location.name}
+            menuGroups={menuData.menuGroups}
             menuItems={menuData.menuItems}
             organizationName={menuData.organization.name}
         />

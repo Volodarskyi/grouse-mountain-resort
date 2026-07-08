@@ -1,28 +1,41 @@
 .app-modal {
     overflow: hidden;
     border-radius: var(--border-radius_16);
+    background: transparent;
 
     .ant-modal-container {
         overflow: hidden;
         border-radius: var(--border-radius_16);
-        padding: 0;
+        padding: 0 !important;
+        background: transparent !important;
     }
 
     .ant-modal-content {
         overflow: hidden;
         border-radius: var(--border-radius_16);
-        padding: 0;
-        background: transparent;
+        border: none !important;
+        box-shadow: none;
+        padding: 0 !important;
+        background: var(--color-primary) !important;
+    }
+
+    .ant-modal-section {
+        overflow: hidden;
+        border-radius: var(--border-radius_16);
+        padding: 0 !important;
+        background: var(--color-primary) !important;
     }
 
     .ant-modal-body {
+        padding: 0 !important;
         color: var(--color-text-primary);
     }
 
     &__shell {
         overflow: hidden;
         border-radius: var(--border-radius_16);
-        background: var(--color-white);
+        border: none;
+        background: var(--color-primary);
     }
 
     &__header {
@@ -40,12 +53,13 @@
 
         color: var(--color-white);
         font-size: 22px;
-        font-weight: 900;
+        font-weight: 700;
         line-height: 1.25;
     }
 
     &__body {
         padding: 24px;
+        background: var(--color-white);
     }
 
     &__footer {
@@ -70,7 +84,7 @@
 
         font-family: inherit;
         font-size: 18px;
-        font-weight: 600;
+        font-weight: 700;
 
         transition:
                 opacity 0.2s ease,
@@ -83,15 +97,15 @@
 
         &--secondary {
             background: var(--color-white);
-            color: var(--color-text-secondary);
-            border-color: var(--color-text-secondary);
+            color: var(--color_primary-300);
+            border-color: var(--color_primary-300);
         }
     }
 }
 
 .ant-modal-root {
     .ant-modal-mask {
-        background: rgba(0, 0, 10, 0.85);
+        background: rgba(3, 12, 31, 0.88);
     }
 }
 

@@ -55,6 +55,7 @@ This version has breaking changes - APIs, conventions, and file structure may al
 - Keep shared API clients under `src/api` and shared types under `src/types`.
 - Prefer the existing global CSS/SCSS patterns before introducing another styling approach. The active Header styling is `Header.Styles.scss`; `Header.module.css` is legacy/unused unless a component imports it.
 - Static assets in `public` must be referenced with root-relative URLs, for example `/assets/logo/GMR_logo_white.png` or `/assets/ingredients/BeefPatty.png`.
+- Use the shared `UiModalRoot` / `modalStore` flow for confirmations and app dialogs. Do not use `window.confirm`, `window.alert`, or direct Ant Design `Modal` calls for new app UI unless the shared modal cannot support the case.
 - When adding user-facing localized text, update both `src/i18n/dictionaries/en.ts` and `src/i18n/dictionaries/fr.ts`.
 
 ## Verification
