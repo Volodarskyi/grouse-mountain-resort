@@ -24,7 +24,7 @@ export default async function LocationLayout({
         notFound();
     }
 
-    const locationBasePath = `/org/${organizationSlug}/location/${locationSlug}`;
+    const organizationLocationsPath = `/org/${organizationSlug}`;
     const dictionary = getDictionary(defaultLocale);
 
     return (
@@ -32,7 +32,7 @@ export default async function LocationLayout({
             <Header
                 lang={defaultLocale}
                 dictionary={dictionary}
-                homeHref={locationBasePath}
+                homeHref={organizationLocationsPath}
             />
             {children}
         </>

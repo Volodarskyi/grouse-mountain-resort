@@ -1,12 +1,57 @@
 import { model, models, Schema, type InferSchemaType } from "mongoose";
 
+import { productionAreas } from "../../workstations/model/workstationConstants";
+
 export const orderStatuses = [
     "submitted",
+    "accepted",
     "in_progress",
+    "assembling",
     "ready",
+    "ready_for_pickup",
     "completed",
     "cancelled",
 ] as const;
+
+export const orderItemStatuses = [
+    "queued",
+    "claimed",
+    "preparing",
+    "ready",
+    "handed_off",
+    "packed",
+    "cancelled",
+] as const;
+
+const orderStatusHistorySchema = new Schema(
+    {
+        fromStatus: {
+            type: String,
+            enum: orderStatuses,
+        },
+        toStatus: {
+            type: String,
+            enum: orderStatuses,
+            required: true,
+        },
+        changedByUserId: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+        },
+        changedAt: {
+            type: Date,
+            default: Date.now,
+        },
+        note: {
+            type: String,
+            trim: true,
+            default: "",
+        },
+    },
+    {
+        _id: false,
+    },
+);
 
 const orderItemSchema = new Schema(
     {
@@ -15,6 +60,35 @@ const orderItemSchema = new Schema(
             ref: "MenuItem",
             required: true,
         },
+        nameSnapshot: {
+            type: String,
+            required: true,
+            trim: true,
+        },
+        priceSnapshot: {
+            type: Number,
+            required: true,
+            min: 0,
+        },
+        station: {
+            type: String,
+            trim: true,
+            default: "",
+        },
+        productionArea: {
+            type: String,
+            enum: productionAreas,
+            required: true,
+        },
+        workstationId: {
+            type: Schema.Types.ObjectId,
+            ref: "Workstation",
+        },
+        workstationNameSnapshot: {
+            type: String,
+            trim: true,
+            default: "",
+        },
         quantity: {
             type: Number,
             required: true,
@@ -22,11 +96,29 @@ const orderItemSchema = new Schema(
         },
         status: {
             type: String,
-            required: true,
+            enum: orderItemStatuses,
+            default: "queued",
+        },
+        claimedByUserId: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+        },
+        preparedByUserId: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+        },
+        readyAt: {
+            type: Date,
+        },
+        handedOffAt: {
+            type: Date,
+        },
+        packedAt: {
+            type: Date,
         },
     },
     {
-        _id: false,
+        _id: true,
     },
 );
 
@@ -47,13 +139,46 @@ const orderSchema = new Schema(
             required: true,
             trim: true,
         },
+        clientRequestId: {
+            type: String,
+            trim: true,
+        },
         status: {
             type: String,
             enum: orderStatuses,
             default: "submitted",
         },
+        createdByUserId: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+        },
+        acceptedByUserId: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+        },
+        completedByUserId: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+        },
+        issuedByUserId: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+        },
+        cancelledByUserId: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+        },
+        total: {
+            type: Number,
+            default: 0,
+            min: 0,
+        },
         items: {
             type: [orderItemSchema],
+            default: [],
+        },
+        statusHistory: {
+            type: [orderStatusHistorySchema],
             default: [],
         },
     },
@@ -62,7 +187,21 @@ const orderSchema = new Schema(
     },
 );
 
+orderSchema.index(
+    { organizationId: 1, locationId: 1, orderNumber: 1 },
+    { unique: true },
+);
+orderSchema.index(
+    { organizationId: 1, locationId: 1, clientRequestId: 1 },
+    {
+        unique: true,
+        partialFilterExpression: { clientRequestId: { $type: "string" } },
+    },
+);
+orderSchema.index({ organizationId: 1, locationId: 1, status: 1, updatedAt: -1 });
+
 export type OrderStatus = (typeof orderStatuses)[number];
+export type OrderItemStatus = (typeof orderItemStatuses)[number];
 export type OrderDocument = InferSchemaType<typeof orderSchema>;
 
 const OrderModel = models.Order || model("Order", orderSchema);

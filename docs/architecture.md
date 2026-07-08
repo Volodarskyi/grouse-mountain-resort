@@ -32,6 +32,8 @@ Organization
   -> Location
     -> Modules
   -> Users
+  -> Workstations
+  -> Shifts
 ```
 
 Mongo documents should expose:
@@ -75,6 +77,15 @@ database connection strings with `NEXT_PUBLIC_`.
 Active Mongo models:
 
 - `features/users/model/User.ts` stores application users.
+- `features/organizations/model/Organization.ts` stores tenant organizations.
+- `features/locations/model/Location.ts` stores organization locations.
+- `features/menu/model/MenuItem.ts` stores menu items and their production routing defaults.
+- `features/menu/model/MenuGroup.ts` stores menu item groups.
+- `features/orders/model/Order.ts` stores guest orders and order item workflow snapshots.
+- `features/recipes/model/Recipe.ts` stores recipe metadata, video URL, steps, ingredient quantities, and creator reference.
+- `features/workstations/model/Workstation.ts` stores configurable production stations per location.
+- `features/shifts/model/Shift.ts` stores location business-day shifts.
+- `features/shifts/model/ShiftStationAssignment.ts` stores users assigned to stations for a shift.
 
 User documents include `firstName`, `secondName`, `phone`, unique lowercase
 `email`, hashed `password`, optional `role`, optional organization/location/
@@ -90,6 +101,10 @@ Menu item creation is exposed through:
 
 ```txt
 POST /api/menu-items
+PATCH /api/menu-items/[menuItemId]
+DELETE /api/menu-items/[menuItemId]
+GET /api/menu-groups?organizationId=...&locationId=...
+POST /api/menu-groups
 ```
 
 Menu module routes:
@@ -97,10 +112,113 @@ Menu module routes:
 ```txt
 /org/[organizationSlug]/location/[locationSlug]/menu
 /org/[organizationSlug]/location/[locationSlug]/menu/create
+/org/[organizationSlug]/location/[locationSlug]/menu/[menuItemId]/edit
 ```
 
 The menu module resolves organization and location slugs to Mongo `_id`
-references before reading or creating `MenuItem` documents.
+references before reading or creating `MenuItem` documents. Menu items belong
+to `MenuGroup` documents scoped by organization and location. Menu items should
+link to recipes through optional `recipeId`; do not store recipe ingredients
+directly on menu items.
+
+Recipe documents are prepared for a later recipe/ingredients sprint:
+
+```txt
+Recipe
+  organizationId
+  locationIds[]
+  code
+  name
+  videoUrl
+  steps[] = stepNumber, description, durationSeconds, imageUrl?
+  ingredients[] = ingredientCode, quantity, unit
+  createdByUserId
+  createdAt
+  updatedAt
+```
+
+Recipe ingredients reference the existing training ingredient codes. Unknown
+ingredient codes should be skipped by future recipe import/management logic.
+
+## Order Workflow
+
+Order automation is modeled as a Front Desk assembler workflow with optional
+Kitchen work:
+
+```txt
+Front Desk accepts order
+  -> Front Desk assembles front_desk items
+  -> Kitchen prepares kitchen/bar/expo items
+  -> Kitchen hands ready items back to Front Desk
+  -> Front Desk packs the order
+  -> Guest receives the order
+```
+
+MongoDB is the source of truth. Ably should be used later as the realtime
+transport after successful MongoDB writes, not as the owner of business state.
+
+Production routing uses two layers:
+
+```txt
+productionArea = front_desk | kitchen | bar | expo
+workstation = configurable station inside a production area
+```
+
+Examples:
+
+```txt
+Kitchen Station 1 - Patties
+Kitchen Station 2 - Buns / Hot Dogs / Sides / Salads
+Kitchen Station 3 - Burger Assembly
+```
+
+The number of active workstations and assigned user accounts can change by
+shift. `Workstation` stores reusable station definitions, `Shift` stores the
+business day, and `ShiftStationAssignment` stores who is working each station
+for that shift.
+
+`MenuItem.station` remains for backward compatibility with the current UI.
+New workflow code should use `productionArea` and optional
+`defaultWorkstationId`. If the UI only sends `station`, the server infers
+`productionArea` from it.
+
+`Order.items` stores snapshots of menu item name, price, station,
+productionArea, workstation, quantity, and item status at order creation time.
+Do not rely on the live `MenuItem` document for historical orders.
+
+Order statuses:
+
+```txt
+submitted
+accepted
+in_progress
+assembling
+ready
+ready_for_pickup
+completed
+cancelled
+```
+
+Order item statuses:
+
+```txt
+queued
+claimed
+preparing
+ready
+handed_off
+packed
+cancelled
+```
+
+For Ably, start with one channel per location:
+
+```txt
+orders:{organizationSlug}:{locationSlug}
+```
+
+Do not create one channel per order or per workstation for the MVP. The UI can
+filter events by `productionArea` and `workstationId`.
 
 Development seed data is exposed through:
 
@@ -109,6 +227,23 @@ POST /api/dev/seed
 ```
 
 The seed endpoint upserts Grouse Mountain Resort and its initial locations.
+
+Development menu transfer is exposed through:
+
+```txt
+GET /api/dev/menu-transfer
+GET /api/dev/menu-transfer?action=export&organizationId=...&locationId=...
+POST /api/dev/menu-transfer
+```
+
+The menu transfer endpoint is dev tooling for moving restaurant menu groups and
+menu items between `dev`, `demo`, and `prod` databases. Export returns JSON with
+`schemaVersion`, source organization/location metadata, groups, and menuItems.
+Import targets the selected organization/location and upserts groups by name and
+menu items by `code` within that location. Transfer JSON uses portable
+`recipeCode`, not Mongo ObjectIds. During import, `recipeCode` is resolved to the
+target database `Recipe`; if the recipe does not exist yet, the menu item is
+imported without `recipeId`.
 
 ## Seeded Organization
 

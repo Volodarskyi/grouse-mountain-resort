@@ -5,6 +5,7 @@ import type { ComponentType, ReactNode } from "react";
 
 import type {
     AiChatAssistantModalProps,
+    ConfirmActionModalProps,
     ModalOptions,
     ModalPropsMap,
     ModalType,
@@ -25,6 +26,9 @@ const AiChatAssistant = dynamic<AiChatAssistantModalProps>(
 );
 const ShiftReportPreview = dynamic<ShiftReportPreviewModalProps>(
     () => import("./bodies/ShiftReportPreview"),
+);
+const ConfirmAction = dynamic<ConfirmActionModalProps>(
+    () => import("./bodies/ConfirmAction"),
 );
 const TestModal = dynamic<ModalPropsMap["TEST_MODAL"]>(
     () => import("./bodies/TestModal"),
@@ -50,6 +54,15 @@ export const MODAL_REGISTRY = {
         defaultOptions: {
             title: "Shift report preview",
             width: 600,
+        },
+    },
+    CONFIRM_ACTION: {
+        Component: ConfirmAction,
+        defaultOptions: {
+            title: "Confirm action",
+            width: 480,
+            confirmText: "Confirm",
+            cancelText: "Cancel",
         },
     },
     TEST_MODAL: {

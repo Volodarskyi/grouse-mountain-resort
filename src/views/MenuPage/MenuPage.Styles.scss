@@ -1,5 +1,5 @@
 .menu-page {
-  width: min(1080px, calc(100% - 32px));
+  width: min(920px, calc(100% - 32px));
   margin: 0 auto;
   padding: 32px 0;
 }
@@ -30,6 +30,115 @@
   border-radius: var(--border-radius_16);
 }
 
+.menu-page__groups {
+  display: grid;
+  gap: 24px;
+}
+
+.menu-page__group {
+  display: grid;
+  gap: 10px;
+}
+
+.menu-page__group-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.menu-page__group-icon {
+  object-fit: contain;
+}
+
+.menu-page__group-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color_neutral-500);
+}
+
+.menu-page__table {
+  overflow: hidden;
+  border: 1px solid rgba(226, 223, 223, 0.8);
+  border-radius: var(--border-radius_16);
+
+  .ant-table {
+    background: var(--color-white);
+  }
+
+  .ant-table-thead > tr > th {
+    padding: 18px 24px;
+    background: var(--color-white);
+    border-bottom: 1px solid var(--color-border);
+
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .ant-table-thead > tr > th::before {
+    display: none;
+  }
+
+  .ant-table-tbody > tr > td {
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(226, 223, 223, 0.8);
+
+    font-size: 16px;
+  }
+
+  .ant-table-tbody > tr:last-child > td {
+    border-bottom: none;
+  }
+}
+
+.menu-page__table-price-column {
+  text-align: left;
+  white-space: nowrap;
+}
+
+.menu-page__table-action-column {
+  text-align: right;
+}
+
+.menu-page__table-actions {
+  display: inline-flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.menu-page__icon-button {
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  min-height: 40px;
+  padding: 0;
+  border-radius: var(--radius-full);
+  color: var(--color-white);
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+    transform: none;
+  }
+}
+
+.menu-page__action-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.menu-page__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .menu-page__add-button {
   width: 100%;
   margin-top: 24px;
@@ -38,5 +147,27 @@
 @media (max-width: 640px) {
   .menu-page__header {
     flex-direction: column;
+  }
+
+  .menu-page__table {
+    .ant-table-thead > tr > th,
+    .ant-table-tbody > tr > td {
+      padding: 16px 14px;
+    }
+  }
+
+  .menu-page__table-price-column {
+    width: 104px;
+  }
+
+  .menu-page__table-action-column {
+    width: 104px;
+  }
+
+  .menu-page__icon-button {
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    min-height: 36px;
   }
 }

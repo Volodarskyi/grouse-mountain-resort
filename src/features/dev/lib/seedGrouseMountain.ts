@@ -71,7 +71,7 @@ export async function seedGrouseMountain() {
         { slug: organizationSeed.slug },
         { $set: organizationSeed },
         {
-            new: true,
+            returnDocument: "after",
             setDefaultsOnInsert: true,
             upsert: true,
         },
@@ -91,7 +91,7 @@ export async function seedGrouseMountain() {
                     },
                 },
                 {
-                    new: true,
+                    returnDocument: "after",
                     setDefaultsOnInsert: true,
                     upsert: true,
                 },

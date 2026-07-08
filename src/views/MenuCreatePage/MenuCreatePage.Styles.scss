@@ -29,6 +29,20 @@
   margin-top: 8px;
 }
 
+.menu-create-page__group-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  color: var(--color_neutral-500);
+  font-weight: 600;
+}
+
+.menu-create-page__group-add {
+  color: var(--color_primary-300);
+  font-weight: 600;
+}
+
 @media (max-width: 640px) {
   .menu-create-page__actions {
     align-items: stretch;
