@@ -28,9 +28,11 @@ const exportedMenuItemSchema = z.object({
     groupName: z.string().trim().min(1),
     name: z.string().trim().min(1),
     code: z.string().trim().min(1),
+    description: z.string().trim().default(""),
     station: z.enum(menuItemStations),
     productionArea: z.enum(productionAreas),
     price: z.number().min(0),
+    calories: z.number().min(0).default(0),
     recipeCode: z.string().trim().min(1).nullable().default(null),
     isActive: z.boolean().default(true),
 });
@@ -152,9 +154,11 @@ export async function exportRestaurantMenu(
             groupName: groupNameById.get(menuItem.groupId?.toString() ?? "") ?? "",
             name: menuItem.name,
             code: menuItem.code,
+            description: menuItem.description ?? "",
             station: menuItem.station,
             productionArea: menuItem.productionArea,
             price: menuItem.price,
+            calories: menuItem.calories ?? 0,
             recipeCode: recipeCodeById.get(menuItem.recipeId?.toString() ?? "") ?? null,
             isActive: menuItem.isActive,
         })),
@@ -249,9 +253,11 @@ export async function importRestaurantMenu(input: ImportMenuTransferInput) {
         const menuItemSet: Record<string, unknown> = {
             groupId,
             name: menuItem.name,
+            description: menuItem.description,
             station: menuItem.station,
             productionArea: menuItem.productionArea,
             price: menuItem.price,
+            calories: menuItem.calories,
             isActive: menuItem.isActive,
         };
         const recipeUnset = recipeId ? undefined : { recipeId: "" };

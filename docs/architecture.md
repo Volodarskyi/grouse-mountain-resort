@@ -14,6 +14,9 @@ The project uses one routing standard:
 /org/[organizationSlug]/location/[locationSlug]
 /org/[organizationSlug]/location/[locationSlug]/training
 /org/[organizationSlug]/location/[locationSlug]/orders
+/org/[organizationSlug]/location/[locationSlug]/orders/public
+/org/[organizationSlug]/location/[locationSlug]/orders/make
+/org/[organizationSlug]/location/[locationSlug]/orders/prepare
 /org/[organizationSlug]/location/[locationSlug]/kitchen
 /org/[organizationSlug]/location/[locationSlug]/menu
 /org/[organizationSlug]/location/[locationSlug]/recipes
@@ -119,7 +122,8 @@ The menu module resolves organization and location slugs to Mongo `_id`
 references before reading or creating `MenuItem` documents. Menu items belong
 to `MenuGroup` documents scoped by organization and location. Menu items should
 link to recipes through optional `recipeId`; do not store recipe ingredients
-directly on menu items.
+directly on menu items. Menu items also expose optional `description` and
+`calories` for order-entry UI.
 
 Recipe documents are prepared for a later recipe/ingredients sprint:
 
@@ -220,6 +224,26 @@ orders:{organizationSlug}:{locationSlug}
 Do not create one channel per order or per workstation for the MVP. The UI can
 filter events by `productionArea` and `workstationId`.
 
+Orders module routes:
+
+```txt
+/org/[organizationSlug]/location/[locationSlug]/orders
+/org/[organizationSlug]/location/[locationSlug]/orders/public
+/org/[organizationSlug]/location/[locationSlug]/orders/make
+/org/[organizationSlug]/location/[locationSlug]/orders/prepare
+```
+
+`/orders` is the staff hub for order tools. `/orders/public` is reserved for a
+future guest phone ordering entry point and stays disabled until customer-facing
+ordering has its own security/session/payment rules. `/orders/make` is the
+Front Desk order entry screen. `/orders/prepare` is the shared production board
+for Front Desk assembly, Kitchen, Bar, and Expo.
+
+`/orders/make` is a mobile-first client view. Its menu group bar scrolls
+horizontally, while menu items scroll vertically inside the bordered work area.
+Menu item detail uses `UiModalRoot`. Order navigation and cart review use the
+shared `UiDrawerRoot` / `drawerStore` flow with right and bottom placements.
+
 Development seed data is exposed through:
 
 ```txt
@@ -283,6 +307,9 @@ src/
             page.tsx
             training/page.tsx
             orders/page.tsx
+            orders/public/page.tsx
+            orders/make/page.tsx
+            orders/prepare/page.tsx
             kitchen/page.tsx
             menu/page.tsx
             recipes/page.tsx

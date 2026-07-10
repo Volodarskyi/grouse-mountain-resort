@@ -5,6 +5,7 @@ export type ModalType =
     | "AI_CHAT_ASSISTANT"
     | "SHIFT_REPORT_PREVIEW"
     | "CONFIRM_ACTION"
+    | "MENU_ITEM_DETAIL"
     | "TEST_MODAL";
 
 export type RecipeDetailModalProps = {
@@ -33,11 +34,19 @@ export type ConfirmActionModalProps = {
     details?: string;
 };
 
+export type MenuItemDetailModalProps = {
+    calories: number;
+    description: string;
+    name: string;
+    price: number;
+};
+
 export type ModalPropsMap = {
     RECIPE_DETAIL: RecipeDetailModalProps;
     AI_CHAT_ASSISTANT: AiChatAssistantModalProps;
     SHIFT_REPORT_PREVIEW: ShiftReportPreviewModalProps;
     CONFIRM_ACTION: ConfirmActionModalProps;
+    MENU_ITEM_DETAIL: MenuItemDetailModalProps;
     TEST_MODAL: TestModalProps;
 };
 
