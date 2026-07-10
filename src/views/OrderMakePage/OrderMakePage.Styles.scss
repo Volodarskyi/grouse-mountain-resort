@@ -41,6 +41,16 @@
   font-size: 17px;
   font-weight: 700;
   line-height: 1.3;
+
+  a {
+    color: inherit;
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      text-decoration: underline;
+    }
+  }
 }
 
 .order-make-page__menu-button {
@@ -227,15 +237,22 @@
 }
 
 .order-make-page__footer {
-  padding: 18px 28px;
-  background: var(--color-primary);
+  padding: 40px 28px 18px;
+  background: linear-gradient(
+                  to bottom,
+                  var(--color-background) 0,
+                  var(--color-background) 22px,
+                  var(--color-primary) 22px,
+                  var(--color-primary) 100%
+  );
 }
 
 .order-make-page__order-button {
   width: 100%;
-  min-height: 68px;
+  min-height: 48px;
+  height: 48px;
   position: relative;
-  font-size: 28px;
+  font-size: 22px;
   text-transform: uppercase;
 }
 
@@ -243,9 +260,9 @@
   position: absolute;
   right: 12px;
 
-  min-width: 52px;
-  height: 52px;
-  padding: 0 12px;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
 
   display: inline-flex;
   align-items: center;
@@ -254,7 +271,7 @@
   border-radius: var(--radius-full);
   background: var(--color-white);
   color: var(--color-primary);
-  font-size: 26px;
+  font-size: 20px;
   font-weight: 800;
 }
 

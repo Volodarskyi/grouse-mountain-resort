@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useRef, useState, type CSSProperties } from "react";
 
 import { UiButton } from "@/components/Ui/UiButton/UiButton";
@@ -23,6 +24,7 @@ type OrderMakeMenuItem = {
 };
 
 type OrderMakePageProps = {
+    locationHref: string;
     locationName: string;
     menuGroups: OrderMakeMenuGroup[];
     menuItems: OrderMakeMenuItem[];
@@ -30,6 +32,7 @@ type OrderMakePageProps = {
         href: string;
         label: string;
     }>;
+    organizationHref: string;
     organizationName: string;
 };
 
@@ -41,10 +44,12 @@ type CartItem = {
 };
 
 export function OrderMakePage({
+    locationHref,
     locationName,
     menuGroups,
     menuItems,
     navigationLinks,
+    organizationHref,
     organizationName,
 }: OrderMakePageProps) {
     const { drawerStore, modalStore } = useStores();
@@ -185,7 +190,11 @@ export function OrderMakePage({
                     <div>
                         <h1 className="order-make-page__title">Make Order</h1>
                         <p className="order-make-page__subtitle">
-                            {organizationName} / {locationName}
+                            <Link href={organizationHref}>
+                                {organizationName}
+                            </Link>
+                            <span> / </span>
+                            <Link href={locationHref}>{locationName}</Link>
                         </p>
                     </div>
                     <button
