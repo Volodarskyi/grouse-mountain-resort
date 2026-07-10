@@ -1,0 +1,148 @@
+.orders-home-page {
+  width: 100%;
+  min-height: calc(100vh - 96px);
+  padding: 56px 32px;
+  background: var(--color-background);
+}
+
+.orders-home-page__header {
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.orders-home-page__eyebrow {
+  margin-bottom: 8px;
+  color: var(--color-primary);
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.orders-home-page__title {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.orders-home-page__grid {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 360px));
+  justify-content: center;
+  gap: 18px;
+}
+
+.orders-home-page__card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  border-radius: var(--border-radius_16);
+  background: var(--color-primary);
+  box-shadow: 6px 8px 11px 0 rgba(0, 0, 0, 0.34);
+
+  transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 8px 12px 18px 0 rgba(0, 0, 0, 0.38);
+  }
+}
+
+.orders-home-page__card--disabled {
+  opacity: 0.62;
+
+  &:hover {
+    transform: none;
+    box-shadow: 6px 8px 11px 0 rgba(0, 0, 0, 0.34);
+  }
+}
+
+.orders-home-page__card-head {
+  position: relative;
+}
+
+.orders-home-page__image-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--color-white);
+}
+
+.orders-home-page__image {
+  object-fit: contain;
+  padding: 10px 22px;
+}
+
+.orders-home-page__status {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+
+  padding: 8px 12px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--color_primary-500);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.orders-home-page__card-body {
+  width: 100%;
+  min-height: 132px;
+  padding: 20px 22px 0;
+
+  display: grid;
+  gap: 10px;
+
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.orders-home-page__card-title {
+  margin: 0;
+  color: var(--color-white);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.orders-home-page__card-text {
+  margin: 0;
+  color: var(--color-white);
+  font-size: 15px;
+  line-height: 1.45;
+  opacity: 0.85;
+}
+
+.orders-home-page__card > .ui-button {
+  width: calc(100% - 44px);
+  margin: 18px 22px 22px;
+}
+
+@media (max-width: 860px) {
+  .orders-home-page__grid {
+    grid-template-columns: minmax(0, 360px);
+  }
+}
+
+@media (max-width: 640px) {
+  .orders-home-page {
+    min-height: calc(100vh - 72px);
+    padding: 28px 20px;
+  }
+
+  .orders-home-page__title {
+    font-size: 32px;
+  }
+
+  .orders-home-page__grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -6,6 +6,7 @@ import type { ComponentType, ReactNode } from "react";
 import type {
     AiChatAssistantModalProps,
     ConfirmActionModalProps,
+    MenuItemDetailModalProps,
     ModalOptions,
     ModalPropsMap,
     ModalType,
@@ -29,6 +30,9 @@ const ShiftReportPreview = dynamic<ShiftReportPreviewModalProps>(
 );
 const ConfirmAction = dynamic<ConfirmActionModalProps>(
     () => import("./bodies/ConfirmAction"),
+);
+const MenuItemDetail = dynamic<MenuItemDetailModalProps>(
+    () => import("./bodies/MenuItemDetail"),
 );
 const TestModal = dynamic<ModalPropsMap["TEST_MODAL"]>(
     () => import("./bodies/TestModal"),
@@ -63,6 +67,15 @@ export const MODAL_REGISTRY = {
             width: 480,
             confirmText: "Confirm",
             cancelText: "Cancel",
+        },
+    },
+    MENU_ITEM_DETAIL: {
+        Component: MenuItemDetail,
+        defaultOptions: {
+            title: "Menu item",
+            width: 480,
+            cancelText: "Cancel",
+            confirmText: "Add to Order",
         },
     },
     TEST_MODAL: {

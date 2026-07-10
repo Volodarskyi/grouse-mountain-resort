@@ -21,6 +21,10 @@ export function Header({ lang, homeHref = "/org" }: HeaderProps) {
     const router = useRouter();
     const [activeLang, setActiveLang] = useState(lang);
 
+    if (pathname?.includes("/orders/make")) {
+        return null;
+    }
+
     function handleLanguageChange(nextLang: "en" | "fr") {
         if (nextLang === lang || !pathname) return;
 

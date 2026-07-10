@@ -18,9 +18,11 @@ const validInput = {
                 groupName: "Hot Dogs",
                 name: "Classic Hot Dog",
                 code: "CLASSIC_HOT_DOG",
+                description: "All beef hot dog on a toasted bun.",
                 station: "front_desk",
                 productionArea: "front_desk",
                 price: 8.5,
+                calories: 420,
                 recipeCode: "CLASSIC_HOT_DOG_RECIPE",
                 isActive: true,
             },
@@ -34,6 +36,7 @@ describe("importMenuTransferInputSchema", () => {
 
         expect(result.data.groups).toHaveLength(1);
         expect(result.data.menuItems[0]?.code).toBe("CLASSIC_HOT_DOG");
+        expect(result.data.menuItems[0]?.calories).toBe(420);
     });
 
     it("rejects unsupported schema versions", () => {
