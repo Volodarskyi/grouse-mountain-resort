@@ -1,0 +1,44 @@
+.orders-placeholder-page {
+  width: min(920px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 40px 0;
+}
+
+.orders-placeholder-page__header {
+  margin-bottom: 24px;
+}
+
+.orders-placeholder-page__eyebrow {
+  margin-bottom: 8px;
+  color: var(--color-primary);
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.orders-placeholder-page__title {
+  margin: 0 0 12px;
+  color: var(--color_secondary-500);
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.orders-placeholder-page__description {
+  max-width: 640px;
+  margin: 0;
+  color: var(--color_neutral-700);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+  .orders-placeholder-page {
+    width: min(100% - 24px, 920px);
+    padding: 28px 0;
+  }
+
+  .orders-placeholder-page__title {
+    font-size: 32px;
+  }
+}

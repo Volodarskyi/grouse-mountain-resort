@@ -1,0 +1,114 @@
+.app-drawer {
+  .ant-drawer-content {
+    background: var(--color-background);
+  }
+
+  .ant-drawer-header {
+    min-height: 72px;
+    padding: 18px 24px;
+    background: var(--color-primary);
+    border-bottom: none;
+  }
+
+  .ant-drawer-title {
+    color: var(--color-white);
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  .ant-drawer-close {
+    color: var(--color-white);
+  }
+
+  .ant-drawer-body {
+    padding: 20px;
+  }
+}
+
+.app-drawer--bottom {
+  .ant-drawer-content {
+    border-radius: var(--border-radius_16) var(--border-radius_16) 0 0;
+    overflow: hidden;
+  }
+}
+
+.app-drawer-nav {
+  display: grid;
+  gap: 12px;
+}
+
+.app-drawer-nav__link {
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+  padding: 0 16px;
+
+  border: 2px solid var(--color_primary-300);
+  border-radius: var(--radius-full);
+  background: var(--color-white);
+  color: var(--color_primary-300);
+  text-decoration: none;
+
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.app-drawer-cart {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.app-drawer-cart__empty {
+  margin: 0;
+  color: var(--color_neutral-700);
+  font-size: 16px;
+}
+
+.app-drawer-cart__list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.app-drawer-cart__item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px;
+
+  border: 1px solid var(--color_neutral-200);
+  border-radius: var(--border-radius_8);
+  background: var(--color-white);
+}
+
+.app-drawer-cart__name {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.app-drawer-cart__meta {
+  margin: 0;
+  color: var(--color_neutral-700);
+  font-size: 14px;
+}
+
+.app-drawer-cart__quantity {
+  color: var(--color-primary);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.app-drawer-cart__total {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  color: var(--color_secondary-500);
+  font-size: 20px;
+  font-weight: 800;
+}

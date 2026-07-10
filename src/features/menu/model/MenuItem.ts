@@ -34,6 +34,11 @@ const menuItemSchema = new Schema(
             required: true,
             trim: true,
         },
+        description: {
+            type: String,
+            trim: true,
+            default: "",
+        },
         station: {
             type: String,
             enum: menuItemStations,
@@ -51,6 +56,11 @@ const menuItemSchema = new Schema(
         price: {
             type: Number,
             required: true,
+        },
+        calories: {
+            type: Number,
+            default: 0,
+            min: 0,
         },
         recipeId: {
             type: Schema.Types.ObjectId,

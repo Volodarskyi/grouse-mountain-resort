@@ -3,6 +3,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 
+import UiDrawerRoot from "@/components/Ui/UiDrawers/UiDrawerRoot";
 import UiModalRoot from "@/components/Ui/UiModals/UiModalRoot";
 import { StoreWrapper } from "@/store/provider";
 
@@ -28,6 +29,7 @@ export function Providers({ children }: ProvidersProps) {
         <StoreWrapper>
             <QueryClientProvider client={queryClient}>
                 {children}
+                <UiDrawerRoot />
                 <UiModalRoot />
             </QueryClientProvider>
         </StoreWrapper>
