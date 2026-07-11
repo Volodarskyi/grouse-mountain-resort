@@ -166,7 +166,7 @@
   margin: 0 16px;
   overflow-y: auto;
 
-  border: 2px dashed var(--color_primary-300);
+  border: 2px dotted var(--color_primary-300);
   border-radius: var(--border-radius_16);
   background: var(--color-white);
   scroll-behavior: smooth;
@@ -189,15 +189,15 @@
 
   h2 {
     margin: 0;
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 600;
     line-height: 1.1;
   }
 }
 
 .order-make-page__menu-group-icon {
-  width: 28px;
-  height: 28px;
+  width: 34px;
+  height: 34px;
   flex: 0 0 auto;
   background: var(--color-white);
   mask: var(--order-group-icon) center / contain no-repeat;
@@ -212,7 +212,7 @@
   gap: 6px;
 
   border: none;
-  border-top: 2px solid var(--color_primary-500);
+  border-top: 2px solid var(--color_neutral-200);
   background: var(--color-white);
   cursor: pointer;
   text-align: left;
@@ -230,7 +230,7 @@
 .order-make-page__menu-item-meta {
   display: flex;
   gap: 20px;
-  color: var(--color_neutral-700);
+  color: var(--color_neutral-500);
   font-size: 16px;
   font-weight: 600;
   line-height: 1.25;
