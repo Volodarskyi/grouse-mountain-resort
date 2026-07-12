@@ -4,7 +4,9 @@ import "./MenuCreatePage.Styles.scss";
 
 type MenuCreatePageProps = {
     currentLocationId?: string;
+    currentLocationSlug?: string;
     currentOrganizationId?: string;
+    currentOrganizationSlug?: string;
     initialMenuItem?: {
         id: string;
         organizationId: string;
@@ -12,6 +14,7 @@ type MenuCreatePageProps = {
         groupId: string;
         name: string;
         code: string;
+        imageUrl: string;
         station: string;
         price: number;
         isActive: boolean;
@@ -24,7 +27,9 @@ type MenuCreatePageProps = {
 
 export function MenuCreatePage({
     currentLocationId,
+    currentLocationSlug,
     currentOrganizationId,
+    currentOrganizationSlug,
     initialMenuItem,
     locationName,
     menuHref,
@@ -44,7 +49,9 @@ export function MenuCreatePage({
 
             <MenuCreateForm
                 currentLocationId={currentLocationId}
+                currentLocationSlug={currentLocationSlug}
                 currentOrganizationId={currentOrganizationId}
+                currentOrganizationSlug={currentOrganizationSlug}
                 initialMenuItem={initialMenuItem}
                 menuHref={menuHref}
                 mode={mode}

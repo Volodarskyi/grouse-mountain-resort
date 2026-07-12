@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useMemo, useRef, useState, type CSSProperties } from "react";
 
 import { UiButton } from "@/components/Ui/UiButton/UiButton";
@@ -19,6 +20,7 @@ type OrderMakeMenuItem = {
     description: string;
     groupId: string;
     id: string;
+    imageUrl: string;
     name: string;
     price: number;
 };
@@ -320,12 +322,26 @@ export function OrderMakePage({
                                     className="order-make-page__menu-item"
                                     onClick={() => openItemModal(menuItem)}
                                 >
-                                    <span className="order-make-page__menu-item-name">
-                                        {menuItem.name}
+                                    <span className="order-make-page__menu-item-image">
+                                        {menuItem.imageUrl ? (
+                                            <Image
+                                                src={menuItem.imageUrl}
+                                                alt={menuItem.name}
+                                                fill
+                                                sizes="72px"
+                                            />
+                                        ) : (
+                                            <span>no image</span>
+                                        )}
                                     </span>
-                                    <span className="order-make-page__menu-item-meta">
-                                        price: ${menuItem.price.toFixed(2)}
-                                        <span>cal: {menuItem.calories}</span>
+                                    <span className="order-make-page__menu-item-content">
+                                        <span className="order-make-page__menu-item-name">
+                                            {menuItem.name}
+                                        </span>
+                                        <span className="order-make-page__menu-item-meta">
+                                            price: ${menuItem.price.toFixed(2)}
+                                            <span>cal: {menuItem.calories}</span>
+                                        </span>
                                     </span>
                                 </button>
                             ))}

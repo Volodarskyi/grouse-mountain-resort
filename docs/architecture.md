@@ -106,6 +106,7 @@ Menu item creation is exposed through:
 POST /api/menu-items
 PATCH /api/menu-items/[menuItemId]
 DELETE /api/menu-items/[menuItemId]
+POST /api/menu-item-images
 GET /api/menu-groups?organizationId=...&locationId=...
 POST /api/menu-groups
 ```
@@ -122,8 +123,16 @@ The menu module resolves organization and location slugs to Mongo `_id`
 references before reading or creating `MenuItem` documents. Menu items belong
 to `MenuGroup` documents scoped by organization and location. Menu items should
 link to recipes through optional `recipeId`; do not store recipe ingredients
-directly on menu items. Menu items also expose optional `description` and
-`calories` for order-entry UI.
+directly on menu items. Menu items also expose optional `description`,
+`imageUrl`, and `calories` for order-entry UI.
+
+During the test period, menu item photos are uploaded through
+`POST /api/menu-item-images` and stored locally under
+`public/assets/photo/menu/{organizationSlug}/{locationSlug}`. MongoDB stores only
+the returned root-relative `imageUrl`, for example
+`/assets/photo/menu/.../photo.png`. This is a temporary local filesystem
+adapter; production file storage can replace the upload implementation later
+without changing the `MenuItem.imageUrl` contract.
 
 Recipe documents are prepared for a later recipe/ingredients sprint:
 

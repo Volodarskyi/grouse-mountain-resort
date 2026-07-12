@@ -19,6 +19,7 @@ const validInput = {
                 name: "Classic Hot Dog",
                 code: "CLASSIC_HOT_DOG",
                 description: "All beef hot dog on a toasted bun.",
+                imageUrl: "/assets/photo/menu/lupins/hot-dog.png",
                 station: "front_desk",
                 productionArea: "front_desk",
                 price: 8.5,

@@ -43,7 +43,9 @@ export default async function MenuCreateModulePage({
     return (
         <MenuCreatePage
             currentLocationId={menuData.location.id}
+            currentLocationSlug={locationSlug}
             currentOrganizationId={menuData.organization.id}
+            currentOrganizationSlug={organizationSlug}
             locationName={menuData.location.name}
             menuHref={menuHref}
             organizationName={menuData.organization.name}

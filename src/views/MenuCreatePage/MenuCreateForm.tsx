@@ -1,6 +1,6 @@
 "use client";
 
-import { Alert, Checkbox, Form, Input, InputNumber, Modal, Select } from "antd";
+import { Alert, Checkbox, Form, Input, InputNumber, Modal, Select, Upload } from "antd";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -13,6 +13,7 @@ type MenuCreateFormValues = {
     groupId: string;
     name: string;
     code: string;
+    imageUrl: string;
     station: string;
     price: number;
     isActive: boolean;
@@ -20,7 +21,9 @@ type MenuCreateFormValues = {
 
 type MenuCreateFormProps = {
     currentLocationId?: string;
+    currentLocationSlug?: string;
     currentOrganizationId?: string;
+    currentOrganizationSlug?: string;
     initialMenuItem?: {
         id: string;
         organizationId: string;
@@ -28,6 +31,7 @@ type MenuCreateFormProps = {
         groupId: string;
         name: string;
         code: string;
+        imageUrl: string;
         station: string;
         price: number;
         isActive: boolean;
@@ -47,6 +51,12 @@ type MenuGroupFormValues = {
     icon: string;
 };
 
+type UploadRequestOptions = {
+    file: Blob | File | string;
+    onError?: (error: Error) => void;
+    onSuccess?: (body: unknown) => void;
+};
+
 const addGroupValue = "__add_group__";
 
 function getMenuGroupIconLabel(icon: string) {
@@ -60,7 +70,9 @@ function getMenuGroupIconLabel(icon: string) {
 
 export function MenuCreateForm({
     currentLocationId,
+    currentLocationSlug,
     currentOrganizationId,
+    currentOrganizationSlug,
     initialMenuItem,
     menuHref,
     mode = "create",
@@ -69,6 +81,8 @@ export function MenuCreateForm({
     const [form] = Form.useForm<MenuCreateFormValues>();
     const organizationId = currentOrganizationId ?? initialMenuItem?.organizationId;
     const locationId = currentLocationId ?? initialMenuItem?.locationIds[0];
+    const organizationSlug = currentOrganizationSlug;
+    const locationSlug = currentLocationSlug;
     const [groupForm] = Form.useForm<MenuGroupFormValues>();
     const [groups, setGroups] = useState<MenuGroupOption[]>([]);
     const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
@@ -76,6 +90,8 @@ export function MenuCreateForm({
     const [isCreatingGroup, setIsCreatingGroup] = useState(false);
     const [error, setError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isUploadingImage, setIsUploadingImage] = useState(false);
+    const imageUrl = Form.useWatch("imageUrl", form) ?? "";
 
     useEffect(() => {
         if (!organizationId || !locationId) {
@@ -151,6 +167,7 @@ export function MenuCreateForm({
                         groupId: values.groupId,
                         name: values.name,
                         code: values.code,
+                        imageUrl: values.imageUrl,
                         station: values.station,
                         price: values.price,
                         isActive: values.isActive,
@@ -223,6 +240,58 @@ export function MenuCreateForm({
         }
     }
 
+    async function handleImageUpload(options: UploadRequestOptions) {
+        if (!organizationSlug || !locationSlug) {
+            const uploadError = new Error("Organization or location is not resolved");
+
+            setError(uploadError.message);
+            options.onError?.(uploadError);
+            return;
+        }
+
+        if (!(options.file instanceof File)) {
+            const uploadError = new Error("Image file is required");
+
+            setError(uploadError.message);
+            options.onError?.(uploadError);
+            return;
+        }
+
+        setIsUploadingImage(true);
+        setError("");
+
+        try {
+            const formData = new FormData();
+
+            formData.append("organizationSlug", organizationSlug);
+            formData.append("locationSlug", locationSlug);
+            formData.append("file", options.file);
+
+            const response = await fetch("/api/menu-item-images", {
+                method: "POST",
+                body: formData,
+            });
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error ?? "Image upload failed");
+            }
+
+            form.setFieldValue("imageUrl", result.imageUrl);
+            options.onSuccess?.(result);
+        } catch (requestError) {
+            const uploadError =
+                requestError instanceof Error
+                    ? requestError
+                    : new Error("Image upload failed");
+
+            setError(uploadError.message);
+            options.onError?.(uploadError);
+        } finally {
+            setIsUploadingImage(false);
+        }
+    }
+
     return (
         <Form
             form={form}
@@ -233,6 +302,7 @@ export function MenuCreateForm({
                 groupId: initialMenuItem?.groupId,
                 name: initialMenuItem?.name,
                 code: initialMenuItem?.code,
+                imageUrl: initialMenuItem?.imageUrl ?? "",
                 station: initialMenuItem?.station,
                 price: initialMenuItem?.price,
                 isActive: initialMenuItem?.isActive ?? true,
@@ -319,6 +389,38 @@ export function MenuCreateForm({
             >
                 <Input />
             </Form.Item>
+
+            <Form.Item name="imageUrl" hidden>
+                <Input />
+            </Form.Item>
+
+            <div className="menu-create-page__image-field">
+                <span className="menu-create-page__image-label">Photo</span>
+                <div className="menu-create-page__image-row">
+                    <span className="menu-create-page__image-preview">
+                        {imageUrl ? (
+                            <Image
+                                src={imageUrl}
+                                alt="Menu item photo"
+                                fill
+                                sizes="96px"
+                            />
+                        ) : (
+                            <span>No image</span>
+                        )}
+                    </span>
+                    <Upload
+                        accept="image/jpeg,image/png,image/webp"
+                        customRequest={handleImageUpload}
+                        maxCount={1}
+                        showUploadList={false}
+                    >
+                        <UiButton type="button" variant="secondary" disabled={isUploadingImage}>
+                            {isUploadingImage ? "Uploading..." : "Upload photo"}
+                        </UiButton>
+                    </Upload>
+                </div>
+            </div>
 
             <Form.Item
                 label="Station"

@@ -39,6 +39,11 @@ const menuItemSchema = new Schema(
             trim: true,
             default: "",
         },
+        imageUrl: {
+            type: String,
+            trim: true,
+            default: "",
+        },
         station: {
             type: String,
             enum: menuItemStations,
