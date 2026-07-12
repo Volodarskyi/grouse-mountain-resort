@@ -53,7 +53,6 @@ export function OrderMakePage({
     organizationName,
 }: OrderMakePageProps) {
     const { drawerStore, modalStore } = useStores();
-    const groupsBarRef = useRef<HTMLElement>(null);
     const workAreaRef = useRef<HTMLDivElement>(null);
     const groupRefs = useRef<Record<string, HTMLElement | null>>({});
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -100,14 +99,6 @@ export function OrderMakePage({
             .replace(/\bchiken\b/gi, "Chicken")
             .replace(/\s+/g, " ")
             .trim();
-
-    function scrollGroupsBar(direction: "left" | "right") {
-        groupsBarRef.current?.scrollBy({
-            left: direction === "left" ? -160 : 160,
-            behavior: "smooth",
-        });
-    }
-
 
     function addItemToCart(menuItem: OrderMakeMenuItem) {
         setCartItems((currentItems) => {
@@ -216,14 +207,7 @@ export function OrderMakePage({
                 </header>
 
                 <div className="order-make-page__groups-shell">
-                    <button
-                        type="button"
-                        className="order-make-page__groups-arrow order-make-page__groups-arrow--left"
-                        aria-label="Scroll menu groups left"
-                        onClick={() => scrollGroupsBar("left")}
-                    />
                     <nav
-                        ref={groupsBarRef}
                         className="order-make-page__groups-bar"
                         aria-label="Menu groups"
                     >
@@ -251,12 +235,6 @@ export function OrderMakePage({
                             </button>
                         ))}
                     </nav>
-                    <button
-                        type="button"
-                        className="order-make-page__groups-arrow order-make-page__groups-arrow--right"
-                        aria-label="Scroll menu groups right"
-                        onClick={() => scrollGroupsBar("right")}
-                    />
                 </div>
 
                 <section
