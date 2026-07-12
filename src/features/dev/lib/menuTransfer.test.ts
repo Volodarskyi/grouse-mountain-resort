@@ -25,6 +25,9 @@ const validInput = {
                 price: 8.5,
                 calories: 420,
                 recipeCode: "CLASSIC_HOT_DOG_RECIPE",
+                isModifiable: true,
+                includedIngredientCodes: ["ING_ALL_BEEF_DOG"],
+                addOnIngredientCodes: ["ING_CRISPY_ONION"],
                 isActive: true,
             },
         ],
@@ -38,6 +41,9 @@ describe("importMenuTransferInputSchema", () => {
         expect(result.data.groups).toHaveLength(1);
         expect(result.data.menuItems[0]?.code).toBe("CLASSIC_HOT_DOG");
         expect(result.data.menuItems[0]?.calories).toBe(420);
+        expect(result.data.menuItems[0]?.includedIngredientCodes).toEqual([
+            "ING_ALL_BEEF_DOG",
+        ]);
     });
 
     it("rejects unsupported schema versions", () => {

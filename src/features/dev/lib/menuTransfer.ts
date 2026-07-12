@@ -35,6 +35,9 @@ const exportedMenuItemSchema = z.object({
     price: z.number().min(0),
     calories: z.number().min(0).default(0),
     recipeCode: z.string().trim().min(1).nullable().default(null),
+    isModifiable: z.boolean().default(false),
+    includedIngredientCodes: z.array(z.string().trim().min(1)).default([]),
+    addOnIngredientCodes: z.array(z.string().trim().min(1)).default([]),
     isActive: z.boolean().default(true),
 });
 
@@ -162,6 +165,9 @@ export async function exportRestaurantMenu(
             price: menuItem.price,
             calories: menuItem.calories ?? 0,
             recipeCode: recipeCodeById.get(menuItem.recipeId?.toString() ?? "") ?? null,
+            isModifiable: menuItem.isModifiable ?? false,
+            includedIngredientCodes: menuItem.includedIngredientCodes ?? [],
+            addOnIngredientCodes: menuItem.addOnIngredientCodes ?? [],
             isActive: menuItem.isActive,
         })),
     };
@@ -261,6 +267,9 @@ export async function importRestaurantMenu(input: ImportMenuTransferInput) {
             productionArea: menuItem.productionArea,
             price: menuItem.price,
             calories: menuItem.calories,
+            isModifiable: menuItem.isModifiable,
+            includedIngredientCodes: menuItem.includedIngredientCodes,
+            addOnIngredientCodes: menuItem.addOnIngredientCodes,
             isActive: menuItem.isActive,
         };
         const recipeUnset = recipeId ? undefined : { recipeId: "" };

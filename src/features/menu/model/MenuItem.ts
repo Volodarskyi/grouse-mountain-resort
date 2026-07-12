@@ -71,6 +71,18 @@ const menuItemSchema = new Schema(
             type: Schema.Types.ObjectId,
             ref: "Recipe",
         },
+        isModifiable: {
+            type: Boolean,
+            default: false,
+        },
+        includedIngredientCodes: {
+            type: [String],
+            default: [],
+        },
+        addOnIngredientCodes: {
+            type: [String],
+            default: [],
+        },
         isActive: {
             type: Boolean,
             default: true,

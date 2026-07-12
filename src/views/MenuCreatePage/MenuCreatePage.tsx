@@ -17,6 +17,9 @@ type MenuCreatePageProps = {
         imageUrl: string;
         station: string;
         price: number;
+        isModifiable: boolean;
+        includedIngredientCodes: string[];
+        addOnIngredientCodes: string[];
         isActive: boolean;
     };
     locationName: string;

@@ -126,6 +126,18 @@ link to recipes through optional `recipeId`; do not store recipe ingredients
 directly on menu items. Menu items also expose optional `description`,
 `imageUrl`, and `calories` for order-entry UI.
 
+Menu items can be marked as modifiable with `isModifiable`. Until the recipe
+and ingredients sprint is implemented, modification configuration stores
+training ingredient codes only:
+
+```txt
+includedIngredientCodes[] = ingredients included by default and removable
+addOnIngredientCodes[] = ingredients available as add-ons
+```
+
+Do not copy ingredient names/images into `MenuItem`; resolve them from the
+training ingredient catalog in the UI.
+
 During the test period, menu item photos are uploaded through
 `POST /api/menu-item-images` and stored locally under
 `public/assets/photo/menu/{organizationSlug}/{locationSlug}`. MongoDB stores only
