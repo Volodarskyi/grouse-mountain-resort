@@ -53,8 +53,10 @@ export function OrderMakePage({
     organizationName,
 }: OrderMakePageProps) {
     const { drawerStore, modalStore } = useStores();
+    const groupsBarRef = useRef<HTMLElement>(null);
     const workAreaRef = useRef<HTMLDivElement>(null);
     const groupRefs = useRef<Record<string, HTMLElement | null>>({});
+    const groupButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const groupedMenu = useMemo(
         () =>
@@ -75,6 +77,7 @@ export function OrderMakePage({
 
     function scrollToGroup(groupId: string) {
         setActiveGroupId(groupId);
+        scrollActiveGroupButtonIntoView(groupId);
 
         const workArea = workAreaRef.current;
         const groupElement = groupRefs.current[groupId];
@@ -87,6 +90,50 @@ export function OrderMakePage({
             top: groupElement.offsetTop - workArea.offsetTop,
             behavior: "smooth",
         });
+    }
+
+    function scrollActiveGroupButtonIntoView(groupId: string) {
+        const groupsBar = groupsBarRef.current;
+        const groupButton = groupButtonRefs.current[groupId];
+
+        if (!groupsBar || !groupButton) {
+            return;
+        }
+
+        groupButton.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "center",
+        });
+    }
+
+    function handleWorkAreaScroll() {
+        const workArea = workAreaRef.current;
+
+        if (!workArea) {
+            return;
+        }
+
+        const scrollPosition = workArea.scrollTop + 24;
+        const currentGroup = groupedMenu.reduce<string>(
+            (currentGroupId, group) => {
+                const groupElement = groupRefs.current[group.id];
+
+                if (!groupElement) {
+                    return currentGroupId;
+                }
+
+                const groupTop = groupElement.offsetTop - workArea.offsetTop;
+
+                return groupTop <= scrollPosition ? group.id : currentGroupId;
+            },
+            groupedMenu[0]?.id ?? "",
+        );
+
+        if (currentGroup && currentGroup !== activeGroupId) {
+            setActiveGroupId(currentGroup);
+            scrollActiveGroupButtonIntoView(currentGroup);
+        }
     }
 
     const getGroupIconStyle = (icon: string) =>
@@ -208,6 +255,7 @@ export function OrderMakePage({
 
                 <div className="order-make-page__groups-shell">
                     <nav
+                        ref={groupsBarRef}
                         className="order-make-page__groups-bar"
                         aria-label="Menu groups"
                     >
@@ -215,6 +263,9 @@ export function OrderMakePage({
                             <button
                                 key={group.id}
                                 type="button"
+                                ref={(element) => {
+                                    groupButtonRefs.current[group.id] = element;
+                                }}
                                 className={[
                                     "order-make-page__group-button",
                                     activeGroupId === group.id
@@ -241,6 +292,7 @@ export function OrderMakePage({
                     ref={workAreaRef}
                     className="order-make-page__work-area"
                     aria-label="Menu items"
+                    onScroll={handleWorkAreaScroll}
                 >
                     {groupedMenu.map((group) => (
                         <section
