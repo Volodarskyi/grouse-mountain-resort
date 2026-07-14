@@ -1,26 +1,34 @@
 "use client";
 
-import { Alert, Checkbox, Form, Input, InputNumber, Modal, Select } from "antd";
+import { Alert, Checkbox, Form, Input, InputNumber, Modal, Select, Upload } from "antd";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { UiButton } from "@/components/Ui/UiButton/UiButton";
 import { menuGroupIcons } from "@/features/menu/model/menuGroupConstants";
 import { menuItemStations } from "@/features/menu/model/menuItemConstants";
+import { ingredients } from "@/features/training/model/trainingData";
+import { useStores } from "@/store/hooks/useStores";
 
 type MenuCreateFormValues = {
     groupId: string;
     name: string;
     code: string;
+    imageUrl: string;
     station: string;
     price: number;
+    isModifiable: boolean;
+    includedIngredientCodes: string[];
+    addOnIngredientCodes: string[];
     isActive: boolean;
 };
 
 type MenuCreateFormProps = {
     currentLocationId?: string;
+    currentLocationSlug?: string;
     currentOrganizationId?: string;
+    currentOrganizationSlug?: string;
     initialMenuItem?: {
         id: string;
         organizationId: string;
@@ -28,8 +36,12 @@ type MenuCreateFormProps = {
         groupId: string;
         name: string;
         code: string;
+        imageUrl: string;
         station: string;
         price: number;
+        isModifiable: boolean;
+        includedIngredientCodes: string[];
+        addOnIngredientCodes: string[];
         isActive: boolean;
     };
     menuHref: string;
@@ -47,6 +59,12 @@ type MenuGroupFormValues = {
     icon: string;
 };
 
+type UploadRequestOptions = {
+    file: Blob | File | string;
+    onError?: (error: Error) => void;
+    onSuccess?: (body: unknown) => void;
+};
+
 const addGroupValue = "__add_group__";
 
 function getMenuGroupIconLabel(icon: string) {
@@ -60,15 +78,21 @@ function getMenuGroupIconLabel(icon: string) {
 
 export function MenuCreateForm({
     currentLocationId,
+    currentLocationSlug,
     currentOrganizationId,
+    currentOrganizationSlug,
     initialMenuItem,
     menuHref,
     mode = "create",
 }: MenuCreateFormProps) {
     const router = useRouter();
+    const { modalStore } = useStores();
     const [form] = Form.useForm<MenuCreateFormValues>();
+    const selectedIngredientCodesRef = useRef<string[]>([]);
     const organizationId = currentOrganizationId ?? initialMenuItem?.organizationId;
     const locationId = currentLocationId ?? initialMenuItem?.locationIds[0];
+    const organizationSlug = currentOrganizationSlug;
+    const locationSlug = currentLocationSlug;
     const [groupForm] = Form.useForm<MenuGroupFormValues>();
     const [groups, setGroups] = useState<MenuGroupOption[]>([]);
     const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
@@ -76,6 +100,15 @@ export function MenuCreateForm({
     const [isCreatingGroup, setIsCreatingGroup] = useState(false);
     const [error, setError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isUploadingImage, setIsUploadingImage] = useState(false);
+    const [includedIngredientCodes, setIncludedIngredientCodes] = useState(
+        initialMenuItem?.includedIngredientCodes ?? [],
+    );
+    const [addOnIngredientCodes, setAddOnIngredientCodes] = useState(
+        initialMenuItem?.addOnIngredientCodes ?? [],
+    );
+    const imageUrl = Form.useWatch("imageUrl", form) ?? "";
+    const isModifiable = Form.useWatch("isModifiable", form) ?? false;
 
     useEffect(() => {
         if (!organizationId || !locationId) {
@@ -151,8 +184,16 @@ export function MenuCreateForm({
                         groupId: values.groupId,
                         name: values.name,
                         code: values.code,
+                        imageUrl: values.imageUrl,
                         station: values.station,
                         price: values.price,
+                        isModifiable: values.isModifiable,
+                        includedIngredientCodes: values.isModifiable
+                            ? includedIngredientCodes
+                            : [],
+                        addOnIngredientCodes: values.isModifiable
+                            ? addOnIngredientCodes
+                            : [],
                         isActive: values.isActive,
                     }),
                 },
@@ -223,6 +264,163 @@ export function MenuCreateForm({
         }
     }
 
+    async function handleImageUpload(options: UploadRequestOptions) {
+        if (!organizationSlug || !locationSlug) {
+            const uploadError = new Error("Organization or location is not resolved");
+
+            setError(uploadError.message);
+            options.onError?.(uploadError);
+            return;
+        }
+
+        if (!(options.file instanceof File)) {
+            const uploadError = new Error("Image file is required");
+
+            setError(uploadError.message);
+            options.onError?.(uploadError);
+            return;
+        }
+
+        setIsUploadingImage(true);
+        setError("");
+
+        try {
+            const formData = new FormData();
+
+            formData.append("organizationSlug", organizationSlug);
+            formData.append("locationSlug", locationSlug);
+            formData.append("file", options.file);
+
+            const response = await fetch("/api/menu-item-images", {
+                method: "POST",
+                body: formData,
+            });
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error ?? "Image upload failed");
+            }
+
+            form.setFieldValue("imageUrl", result.imageUrl);
+            options.onSuccess?.(result);
+        } catch (requestError) {
+            const uploadError =
+                requestError instanceof Error
+                    ? requestError
+                    : new Error("Image upload failed");
+
+            setError(uploadError.message);
+            options.onError?.(uploadError);
+        } finally {
+            setIsUploadingImage(false);
+        }
+    }
+
+    function openIngredientSelector({
+        fieldName,
+        title,
+    }: {
+        fieldName: "includedIngredientCodes" | "addOnIngredientCodes";
+        title: string;
+    }) {
+        const currentSelectedCodes =
+            fieldName === "includedIngredientCodes"
+                ? includedIngredientCodes
+                : addOnIngredientCodes;
+
+        selectedIngredientCodesRef.current = currentSelectedCodes;
+        modalStore.openModal(
+            "INGREDIENT_SELECTOR",
+            {
+                ingredients,
+                selectedCodes: currentSelectedCodes,
+                onSelectionChange: (selectedCodes) => {
+                    selectedIngredientCodesRef.current = selectedCodes;
+                },
+            },
+            {
+                title,
+                cancelText: "Cancel",
+                confirmText: "Select",
+                onConfirm: () => {
+                    if (fieldName === "includedIngredientCodes") {
+                        setIncludedIngredientCodes(
+                            selectedIngredientCodesRef.current,
+                        );
+                    } else {
+                        setAddOnIngredientCodes(selectedIngredientCodesRef.current);
+                    }
+                },
+            },
+        );
+    }
+
+    function removeIngredientCode(
+        fieldName: "includedIngredientCodes" | "addOnIngredientCodes",
+        ingredientCode: string,
+    ) {
+        const currentCodes =
+            fieldName === "includedIngredientCodes"
+                ? includedIngredientCodes
+                : addOnIngredientCodes;
+        const nextCodes = currentCodes.filter(
+            (code: string) => code !== ingredientCode,
+        );
+
+        if (fieldName === "includedIngredientCodes") {
+            setIncludedIngredientCodes(nextCodes);
+        } else {
+            setAddOnIngredientCodes(nextCodes);
+        }
+    }
+
+    function renderIngredientList(
+        fieldName: "includedIngredientCodes" | "addOnIngredientCodes",
+        ingredientCodes: string[],
+    ) {
+        const selectedIngredients = ingredients.filter((ingredient) =>
+            ingredientCodes.includes(ingredient.code),
+        );
+
+        if (selectedIngredients.length === 0) {
+            return (
+                <p className="menu-create-page__ingredients-empty">
+                    No ingredients selected
+                </p>
+            );
+        }
+
+        return (
+            <div className="menu-create-page__ingredients-list">
+                {selectedIngredients.map((ingredient) => (
+                    <span
+                        key={ingredient.code}
+                        className="menu-create-page__ingredient-chip"
+                    >
+                        <span className="menu-create-page__ingredient-image">
+                            <Image
+                                src={ingredient.imgUrl}
+                                alt=""
+                                fill
+                                sizes="28px"
+                            />
+                        </span>
+                        <span>{ingredient.name}</span>
+                        <button
+                            type="button"
+                            aria-label={`Remove ${ingredient.name}`}
+                            onClick={() =>
+                                removeIngredientCode(fieldName, ingredient.code)
+                            }
+                        >
+                            x
+                        </button>
+                    </span>
+                ))}
+            </div>
+        );
+    }
+
     return (
         <Form
             form={form}
@@ -233,8 +431,13 @@ export function MenuCreateForm({
                 groupId: initialMenuItem?.groupId,
                 name: initialMenuItem?.name,
                 code: initialMenuItem?.code,
+                imageUrl: initialMenuItem?.imageUrl ?? "",
                 station: initialMenuItem?.station,
                 price: initialMenuItem?.price,
+                isModifiable: initialMenuItem?.isModifiable ?? false,
+                includedIngredientCodes:
+                    initialMenuItem?.includedIngredientCodes ?? [],
+                addOnIngredientCodes: initialMenuItem?.addOnIngredientCodes ?? [],
                 isActive: initialMenuItem?.isActive ?? true,
             }}
             className="menu-create-page__form"
@@ -320,6 +523,38 @@ export function MenuCreateForm({
                 <Input />
             </Form.Item>
 
+            <Form.Item name="imageUrl" hidden>
+                <Input />
+            </Form.Item>
+
+            <div className="menu-create-page__image-field">
+                <span className="menu-create-page__image-label">Photo</span>
+                <div className="menu-create-page__image-row">
+                    <span className="menu-create-page__image-preview">
+                        {imageUrl ? (
+                            <Image
+                                src={imageUrl}
+                                alt="Menu item photo"
+                                fill
+                                sizes="96px"
+                            />
+                        ) : (
+                            <span>No image</span>
+                        )}
+                    </span>
+                    <Upload
+                        accept="image/jpeg,image/png,image/webp"
+                        customRequest={handleImageUpload}
+                        maxCount={1}
+                        showUploadList={false}
+                    >
+                        <UiButton type="button" variant="secondary" disabled={isUploadingImage}>
+                            {isUploadingImage ? "Uploading..." : "Upload photo"}
+                        </UiButton>
+                    </Upload>
+                </div>
+            </div>
+
             <Form.Item
                 label="Station"
                 name="station"
@@ -344,6 +579,58 @@ export function MenuCreateForm({
             <Form.Item name="isActive" valuePropName="checked">
                 <Checkbox>Active</Checkbox>
             </Form.Item>
+
+            <Form.Item name="isModifiable" valuePropName="checked">
+                <Checkbox>Modifications</Checkbox>
+            </Form.Item>
+
+            {isModifiable ? (
+                <section className="menu-create-page__modifications">
+                    <div className="menu-create-page__ingredients-section">
+                        <div className="menu-create-page__ingredients-header">
+                            <h2>Include</h2>
+                            <UiButton
+                                type="button"
+                                variant="secondary"
+                                onClick={() =>
+                                    openIngredientSelector({
+                                        fieldName: "includedIngredientCodes",
+                                        title: "Select include ingredients",
+                                    })
+                                }
+                            >
+                                Add
+                            </UiButton>
+                        </div>
+                        {renderIngredientList(
+                            "includedIngredientCodes",
+                            includedIngredientCodes,
+                        )}
+                    </div>
+
+                    <div className="menu-create-page__ingredients-section">
+                        <div className="menu-create-page__ingredients-header">
+                            <h2>Add-on</h2>
+                            <UiButton
+                                type="button"
+                                variant="secondary"
+                                onClick={() =>
+                                    openIngredientSelector({
+                                        fieldName: "addOnIngredientCodes",
+                                        title: "Select add-on ingredients",
+                                    })
+                                }
+                            >
+                                Add
+                            </UiButton>
+                        </div>
+                        {renderIngredientList(
+                            "addOnIngredientCodes",
+                            addOnIngredientCodes,
+                        )}
+                    </div>
+                </section>
+            ) : null}
 
             {error ? <Alert type="error" title={error} showIcon /> : null}
 

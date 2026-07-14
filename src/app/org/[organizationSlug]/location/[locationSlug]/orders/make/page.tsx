@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
+import { Alert } from "antd";
 
 import { getMenuItemsForLocation } from "@/features/menu/lib/menuItems";
+import { resolveTenantContext } from "@/features/tenancy/lib/tenancy";
 import { OrderMakePage } from "@/views/OrderMakePage/OrderMakePage";
 
 type MakeOrderPageProps = {
@@ -12,13 +14,28 @@ type MakeOrderPageProps = {
 
 export default async function MakeOrderPage({ params }: MakeOrderPageProps) {
     const { organizationSlug, locationSlug } = await params;
+    const tenant = resolveTenantContext(organizationSlug, locationSlug);
+
+    if (!tenant) {
+        notFound();
+    }
+
     const menuData = await getMenuItemsForLocation(
         organizationSlug,
         locationSlug,
     );
 
     if (!menuData) {
-        notFound();
+        return (
+            <main style={{ padding: 32 }}>
+                <Alert
+                    type="warning"
+                    title="Organization or location is not seeded in MongoDB"
+                    description="Use the dev seed button first, then return to make an order."
+                    showIcon
+                />
+            </main>
+        );
     }
 
     const locationBaseHref = `/org/${organizationSlug}/location/${locationSlug}`;

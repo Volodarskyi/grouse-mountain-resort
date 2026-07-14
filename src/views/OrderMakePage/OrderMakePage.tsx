@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useMemo, useRef, useState, type CSSProperties } from "react";
 
 import { UiButton } from "@/components/Ui/UiButton/UiButton";
@@ -19,6 +20,7 @@ type OrderMakeMenuItem = {
     description: string;
     groupId: string;
     id: string;
+    imageUrl: string;
     name: string;
     price: number;
 };
@@ -56,6 +58,7 @@ export function OrderMakePage({
     const groupsBarRef = useRef<HTMLElement>(null);
     const workAreaRef = useRef<HTMLDivElement>(null);
     const groupRefs = useRef<Record<string, HTMLElement | null>>({});
+    const groupButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const groupedMenu = useMemo(
         () =>
@@ -76,6 +79,7 @@ export function OrderMakePage({
 
     function scrollToGroup(groupId: string) {
         setActiveGroupId(groupId);
+        scrollActiveGroupButtonIntoView(groupId);
 
         const workArea = workAreaRef.current;
         const groupElement = groupRefs.current[groupId];
@@ -90,6 +94,50 @@ export function OrderMakePage({
         });
     }
 
+    function scrollActiveGroupButtonIntoView(groupId: string) {
+        const groupsBar = groupsBarRef.current;
+        const groupButton = groupButtonRefs.current[groupId];
+
+        if (!groupsBar || !groupButton) {
+            return;
+        }
+
+        groupButton.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "center",
+        });
+    }
+
+    function handleWorkAreaScroll() {
+        const workArea = workAreaRef.current;
+
+        if (!workArea) {
+            return;
+        }
+
+        const scrollPosition = workArea.scrollTop + 24;
+        const currentGroup = groupedMenu.reduce<string>(
+            (currentGroupId, group) => {
+                const groupElement = groupRefs.current[group.id];
+
+                if (!groupElement) {
+                    return currentGroupId;
+                }
+
+                const groupTop = groupElement.offsetTop - workArea.offsetTop;
+
+                return groupTop <= scrollPosition ? group.id : currentGroupId;
+            },
+            groupedMenu[0]?.id ?? "",
+        );
+
+        if (currentGroup && currentGroup !== activeGroupId) {
+            setActiveGroupId(currentGroup);
+            scrollActiveGroupButtonIntoView(currentGroup);
+        }
+    }
+
     const getGroupIconStyle = (icon: string) =>
         ({
             "--order-group-icon": `url("${icon}")`,
@@ -100,14 +148,6 @@ export function OrderMakePage({
             .replace(/\bchiken\b/gi, "Chicken")
             .replace(/\s+/g, " ")
             .trim();
-
-    function scrollGroupsBar(direction: "left" | "right") {
-        groupsBarRef.current?.scrollBy({
-            left: direction === "left" ? -160 : 160,
-            behavior: "smooth",
-        });
-    }
-
 
     function addItemToCart(menuItem: OrderMakeMenuItem) {
         setCartItems((currentItems) => {
@@ -216,12 +256,6 @@ export function OrderMakePage({
                 </header>
 
                 <div className="order-make-page__groups-shell">
-                    <button
-                        type="button"
-                        className="order-make-page__groups-arrow order-make-page__groups-arrow--left"
-                        aria-label="Scroll menu groups left"
-                        onClick={() => scrollGroupsBar("left")}
-                    />
                     <nav
                         ref={groupsBarRef}
                         className="order-make-page__groups-bar"
@@ -231,6 +265,9 @@ export function OrderMakePage({
                             <button
                                 key={group.id}
                                 type="button"
+                                ref={(element) => {
+                                    groupButtonRefs.current[group.id] = element;
+                                }}
                                 className={[
                                     "order-make-page__group-button",
                                     activeGroupId === group.id
@@ -251,18 +288,13 @@ export function OrderMakePage({
                             </button>
                         ))}
                     </nav>
-                    <button
-                        type="button"
-                        className="order-make-page__groups-arrow order-make-page__groups-arrow--right"
-                        aria-label="Scroll menu groups right"
-                        onClick={() => scrollGroupsBar("right")}
-                    />
                 </div>
 
                 <section
                     ref={workAreaRef}
                     className="order-make-page__work-area"
                     aria-label="Menu items"
+                    onScroll={handleWorkAreaScroll}
                 >
                     {groupedMenu.map((group) => (
                         <section
@@ -290,12 +322,26 @@ export function OrderMakePage({
                                     className="order-make-page__menu-item"
                                     onClick={() => openItemModal(menuItem)}
                                 >
-                                    <span className="order-make-page__menu-item-name">
-                                        {menuItem.name}
+                                    <span className="order-make-page__menu-item-image">
+                                        {menuItem.imageUrl ? (
+                                            <Image
+                                                src={menuItem.imageUrl}
+                                                alt={menuItem.name}
+                                                fill
+                                                sizes="72px"
+                                            />
+                                        ) : (
+                                            <span>no image</span>
+                                        )}
                                     </span>
-                                    <span className="order-make-page__menu-item-meta">
-                                        price: ${menuItem.price.toFixed(2)}
-                                        <span>cal: {menuItem.calories}</span>
+                                    <span className="order-make-page__menu-item-content">
+                                        <span className="order-make-page__menu-item-name">
+                                            {menuItem.name}
+                                        </span>
+                                        <span className="order-make-page__menu-item-meta">
+                                            price: ${menuItem.price.toFixed(2)}
+                                            <span>cal: {menuItem.calories}</span>
+                                        </span>
                                     </span>
                                 </button>
                             ))}

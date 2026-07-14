@@ -22,7 +22,23 @@ describe("createMenuItemInputSchema", () => {
         const result = createMenuItemInputSchema.parse(validInput);
 
         expect(result.isActive).toBe(true);
+        expect(result.isModifiable).toBe(false);
+        expect(result.includedIngredientCodes).toEqual([]);
+        expect(result.addOnIngredientCodes).toEqual([]);
         expect(result.station).toBe("grill");
+    });
+
+    it("accepts modification ingredient codes", () => {
+        const result = createMenuItemInputSchema.parse({
+            ...validInput,
+            isModifiable: true,
+            includedIngredientCodes: ["ING_BEEF_PATTY"],
+            addOnIngredientCodes: ["ING_CRISPY_BACON"],
+        });
+
+        expect(result.isModifiable).toBe(true);
+        expect(result.includedIngredientCodes).toEqual(["ING_BEEF_PATTY"]);
+        expect(result.addOnIngredientCodes).toEqual(["ING_CRISPY_BACON"]);
     });
 
     it("can infer production area from the legacy station value", () => {

@@ -6,6 +6,7 @@ export type ModalType =
     | "SHIFT_REPORT_PREVIEW"
     | "CONFIRM_ACTION"
     | "MENU_ITEM_DETAIL"
+    | "INGREDIENT_SELECTOR"
     | "TEST_MODAL";
 
 export type RecipeDetailModalProps = {
@@ -41,12 +42,23 @@ export type MenuItemDetailModalProps = {
     price: number;
 };
 
+export type IngredientSelectorModalProps = {
+    ingredients: Array<{
+        code: string;
+        imgUrl: string;
+        name: string;
+    }>;
+    selectedCodes: string[];
+    onSelectionChange: (selectedCodes: string[]) => void;
+};
+
 export type ModalPropsMap = {
     RECIPE_DETAIL: RecipeDetailModalProps;
     AI_CHAT_ASSISTANT: AiChatAssistantModalProps;
     SHIFT_REPORT_PREVIEW: ShiftReportPreviewModalProps;
     CONFIRM_ACTION: ConfirmActionModalProps;
     MENU_ITEM_DETAIL: MenuItemDetailModalProps;
+    INGREDIENT_SELECTOR: IngredientSelectorModalProps;
     TEST_MODAL: TestModalProps;
 };
 
