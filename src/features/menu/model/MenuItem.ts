@@ -39,6 +39,11 @@ const menuItemSchema = new Schema(
             trim: true,
             default: "",
         },
+        imageUrl: {
+            type: String,
+            trim: true,
+            default: "",
+        },
         station: {
             type: String,
             enum: menuItemStations,
@@ -65,6 +70,18 @@ const menuItemSchema = new Schema(
         recipeId: {
             type: Schema.Types.ObjectId,
             ref: "Recipe",
+        },
+        isModifiable: {
+            type: Boolean,
+            default: false,
+        },
+        includedIngredientCodes: {
+            type: [String],
+            default: [],
+        },
+        addOnIngredientCodes: {
+            type: [String],
+            default: [],
         },
         isActive: {
             type: Boolean,

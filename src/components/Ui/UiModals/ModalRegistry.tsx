@@ -6,6 +6,7 @@ import type { ComponentType, ReactNode } from "react";
 import type {
     AiChatAssistantModalProps,
     ConfirmActionModalProps,
+    IngredientSelectorModalProps,
     MenuItemDetailModalProps,
     ModalOptions,
     ModalPropsMap,
@@ -33,6 +34,9 @@ const ConfirmAction = dynamic<ConfirmActionModalProps>(
 );
 const MenuItemDetail = dynamic<MenuItemDetailModalProps>(
     () => import("./bodies/MenuItemDetail"),
+);
+const IngredientSelector = dynamic<IngredientSelectorModalProps>(
+    () => import("./bodies/IngredientSelector"),
 );
 const TestModal = dynamic<ModalPropsMap["TEST_MODAL"]>(
     () => import("./bodies/TestModal"),
@@ -76,6 +80,15 @@ export const MODAL_REGISTRY = {
             width: 480,
             cancelText: "Cancel",
             confirmText: "Add to Order",
+        },
+    },
+    INGREDIENT_SELECTOR: {
+        Component: IngredientSelector,
+        defaultOptions: {
+            title: "Select ingredients",
+            width: 680,
+            cancelText: "Cancel",
+            confirmText: "Select",
         },
     },
     TEST_MODAL: {

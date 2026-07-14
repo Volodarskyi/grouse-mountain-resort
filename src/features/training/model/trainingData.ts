@@ -170,6 +170,166 @@ export const ingredients: Ingredient[] = [
         name: "Caesar Dressing",
         imgUrl: "/assets/ingredients/CaesarDressing.png",
     },
+    {
+        code: "ING_BATTERED_COD",
+        name: "Battered Cod",
+        imgUrl: "/assets/ingredients/BatteredCod.png",
+    },
+    {
+        code: "ING_BEEF_CHILI",
+        name: "Beef Chili",
+        imgUrl: "/assets/ingredients/BeefChili.png",
+    },
+    {
+        code: "ING_BEEF_GRAVY",
+        name: "Beef Gravy",
+        imgUrl: "/assets/ingredients/BeefGravy.png",
+    },
+    {
+        code: "ING_CELERY",
+        name: "Celery",
+        imgUrl: "/assets/ingredients/Celery.png",
+    },
+    {
+        code: "ING_CHEESE_CURDS",
+        name: "Cheese Curds",
+        imgUrl: "/assets/ingredients/CheeseCurds.png",
+    },
+    {
+        code: "ING_CHICKPEAS",
+        name: "Chickpeas",
+        imgUrl: "/assets/ingredients/Chickpeas.png",
+    },
+    {
+        code: "ING_CREAM_SAUCE",
+        name: "Cream Sauce",
+        imgUrl: "/assets/ingredients/Cream%20Sauce.png",
+    },
+    {
+        code: "ING_CRISP_CABBAGE",
+        name: "Crisp Cabbage",
+        imgUrl: "/assets/ingredients/CrispCabbage.png",
+    },
+    {
+        code: "ING_CRISPY_CHICKEN_THIGH",
+        name: "Crispy Chicken Thigh",
+        imgUrl: "/assets/ingredients/CrispyChickenThigh.png",
+    },
+    {
+        code: "ING_CUMIN_RICE",
+        name: "Cumin Rice",
+        imgUrl: "/assets/ingredients/CuminRice.png",
+    },
+    {
+        code: "ING_DICED_ONION",
+        name: "Diced Onion",
+        imgUrl: "/assets/ingredients/DicedOnion.png",
+    },
+    {
+        code: "ING_FANCY_SAUCE",
+        name: "Fancy Sauce",
+        imgUrl: "/assets/ingredients/FancySauce.png",
+    },
+    {
+        code: "ING_FLOUR_TORTILLA",
+        name: "Flour Tortilla",
+        imgUrl: "/assets/ingredients/FlourTortilla.png",
+    },
+    {
+        code: "ING_FRENCH_FRIES",
+        name: "French Fries",
+        imgUrl: "/assets/ingredients/FrenchFries.png",
+    },
+    {
+        code: "ING_GREEN_ONION",
+        name: "Green Onion",
+        imgUrl: "/assets/ingredients/GreenOnion.png",
+    },
+    {
+        code: "ING_GREEN_PEPPER",
+        name: "Green Pepper",
+        imgUrl: "/assets/ingredients/GreenPepper.png",
+    },
+    {
+        code: "ING_HOT_HONEY_SAUCE",
+        name: "Hot Honey Sauce",
+        imgUrl: "/assets/ingredients/HotHoneySauce.png",
+    },
+    {
+        code: "ING_HOUSE_SEASONING",
+        name: "House Seasoning",
+        imgUrl: "/assets/ingredients/HouseSeasoning.png",
+    },
+    {
+        code: "ING_LIME_CREMA",
+        name: "Lime Crema",
+        imgUrl: "/assets/ingredients/LimeCrema.png",
+    },
+    {
+        code: "ING_MILD_CURRY_SAUCE",
+        name: "Mild Curry Sauce",
+        imgUrl: "/assets/ingredients/MildCurrySauce.png",
+    },
+    {
+        code: "ING_MOZZARELLA",
+        name: "Mozzarella",
+        imgUrl: "/assets/ingredients/Mozzarella.png",
+    },
+    {
+        code: "ING_MUSTARD",
+        name: "Mustard",
+        imgUrl: "/assets/ingredients/Mustard.png",
+    },
+    {
+        code: "ING_PEPPERONI",
+        name: "Pepperoni",
+        imgUrl: "/assets/ingredients/Pepperoni.png",
+    },
+    {
+        code: "ING_PIZZA_HOUSE_TOMATO_SAUCE",
+        name: "Pizza House Tomato Sauce",
+        imgUrl: "/assets/ingredients/PiazzaHouseTomatoSauce.png",
+    },
+    {
+        code: "ING_PICKLED_ONION",
+        name: "Pickled Onion",
+        imgUrl: "/assets/ingredients/PickledOnion.png",
+    },
+    {
+        code: "ING_PIZZA_DOUGH_16_INCH",
+        name: "Pizza Dough 16 inch",
+        imgUrl: "/assets/ingredients/PizzaDough16inch.png",
+    },
+    {
+        code: "ING_ROASTED_MUSHROOMS",
+        name: "Roasted Mushrooms",
+        imgUrl: "/assets/ingredients/RoastedMushrooms.png",
+    },
+    {
+        code: "ING_SALSA_ROJA",
+        name: "Salsa Roja",
+        imgUrl: "/assets/ingredients/SalsaRoja.png",
+    },
+    {
+        code: "ING_SALT",
+        name: "Salt",
+        imgUrl: "/assets/ingredients/Salt.png",
+    },
+    {
+        code: "ING_SRIRACHA_SEASONING",
+        name: "Sriracha Seasoning",
+        imgUrl: "/assets/ingredients/SrirachaSeasoning.png",
+    },
+    {
+        code: "ING_THYME",
+        name: "Thyme",
+        imgUrl: "/assets/ingredients/Thyme.png",
+    },
+    {
+        code: "ING_TRUFFLE_OIL",
+        name: "Truffle Oil",
+        imgUrl: "/assets/ingredients/Truffle%20Oil.png",
+    },
 ];
 
 const getIngredient = (code: string): Ingredient => {

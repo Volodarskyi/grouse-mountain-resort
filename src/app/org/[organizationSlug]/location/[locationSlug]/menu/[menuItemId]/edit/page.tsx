@@ -52,7 +52,9 @@ export default async function MenuEditModulePage({
     return (
         <MenuCreatePage
             currentLocationId={menuData.location.id}
+            currentLocationSlug={locationSlug}
             currentOrganizationId={menuData.organization.id}
+            currentOrganizationSlug={organizationSlug}
             initialMenuItem={menuItem}
             locationName={menuData.location.name}
             menuHref={menuHref}
