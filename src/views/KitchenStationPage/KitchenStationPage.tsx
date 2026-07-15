@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 
 import { useStores } from "@/store/hooks/useStores";
 
@@ -244,6 +245,9 @@ export function KitchenStationPage({
     organizationName,
 }: KitchenStationPageProps) {
     const { drawerStore } = useStores();
+    const [currentOrderIndex, setCurrentOrderIndex] = useState(0);
+    const [doneItemIds, setDoneItemIds] = useState<Set<string>>(() => new Set());
+    const currentOrder = stationOrders[currentOrderIndex];
 
     function openMenuDrawer() {
         drawerStore.openDrawer(
@@ -257,6 +261,26 @@ export function KitchenStationPage({
                 size: 340,
             },
         );
+    }
+
+    function showPreviousOrder() {
+        setCurrentOrderIndex((currentIndex) =>
+            currentIndex === 0 ? stationOrders.length - 1 : currentIndex - 1,
+        );
+    }
+
+    function showNextOrder() {
+        setCurrentOrderIndex((currentIndex) =>
+            currentIndex === stationOrders.length - 1 ? 0 : currentIndex + 1,
+        );
+    }
+
+    function markItemDone(itemId: string) {
+        setDoneItemIds((currentDoneItemIds) => {
+            const nextDoneItemIds = new Set(currentDoneItemIds);
+            nextDoneItemIds.add(itemId);
+            return nextDoneItemIds;
+        });
     }
 
     return (
@@ -296,21 +320,28 @@ export function KitchenStationPage({
                 className="kitchen-station-page__orders"
                 aria-label="Kitchen station orders"
             >
-                {stationOrders.map((order, orderIndex) => (
+                <button
+                    type="button"
+                    className="kitchen-station-page__order-nav kitchen-station-page__order-nav--left"
+                    aria-label="Previous order"
+                    onClick={showPreviousOrder}
+                />
+
+                {currentOrder ? (
                     <article
-                        key={order.id}
+                        key={currentOrder.id}
                         className="kitchen-station-page__order-frame"
                     >
                         <div className="kitchen-station-page__order-meta">
                             <span>
-                                {orderIndex + 1}/{stationOrders.length}
+                                {currentOrderIndex + 1}/{stationOrders.length}
                             </span>
-                            <span>ORDER:{order.orderNumber}</span>
-                            <span>TIME: {order.time}</span>
+                            <span>ORDER:{currentOrder.orderNumber}</span>
+                            <span>TIME: {currentOrder.time}</span>
                         </div>
 
                         <div className="kitchen-station-page__items">
-                            {order.items.map((item) => (
+                            {currentOrder.items.map((item) => (
                                 <article
                                     key={item.id}
                                     className="kitchen-station-page__item"
@@ -350,17 +381,48 @@ export function KitchenStationPage({
                                             ),
                                         )}
                                     </div>
-                                    <button type="button">Done</button>
+                                    <button
+                                        type="button"
+                                        className={
+                                            doneItemIds.has(item.id)
+                                                ? "kitchen-station-page__done-button kitchen-station-page__done-button--complete"
+                                                : "kitchen-station-page__done-button"
+                                        }
+                                        aria-label={
+                                            doneItemIds.has(item.id)
+                                                ? `${item.name} is done`
+                                                : `Mark ${item.name} as done`
+                                        }
+                                        onClick={() => markItemDone(item.id)}
+                                    >
+                                        {doneItemIds.has(item.id) ? (
+                                            <Image
+                                                src="/assets/icons/icon-done.svg"
+                                                alt=""
+                                                width={30}
+                                                height={30}
+                                            />
+                                        ) : (
+                                            "Done"
+                                        )}
+                                    </button>
                                 </article>
                             ))}
                         </div>
 
                         <footer className="kitchen-station-page__notes">
                             <strong>Notes:</strong>
-                            <span>{order.notes}</span>
+                            <span>{currentOrder.notes}</span>
                         </footer>
                     </article>
-                ))}
+                ) : null}
+
+                <button
+                    type="button"
+                    className="kitchen-station-page__order-nav kitchen-station-page__order-nav--right"
+                    aria-label="Next order"
+                    onClick={showNextOrder}
+                />
             </section>
         </main>
     );
