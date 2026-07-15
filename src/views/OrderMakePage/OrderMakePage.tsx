@@ -46,16 +46,30 @@ type OrderMakePageProps = {
     organizationName: string;
 };
 
+type CartItemModification = {
+    code: string;
+    name: string;
+    quantity?: number;
+    type: "added" | "removed";
+};
+
 type CartItem = {
     addOnIngredientCounts: Record<string, number>;
     cartKey: string;
     id: string;
     includedIngredientCounts: Record<string, number>;
+    modifications: CartItemModification[];
     name: string;
     price: number;
     quantity: number;
     removedIngredientCodes: string[];
 };
+
+function isCartItemModification(
+    modification: CartItemModification | null,
+): modification is CartItemModification {
+    return Boolean(modification);
+}
 
 export function OrderMakePage({
     locationHref,
@@ -91,10 +105,6 @@ export function OrderMakePage({
     );
     const [activeGroupId, setActiveGroupId] = useState(groupedMenu[0]?.id ?? "");
     const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-    const cartTotal = cartItems.reduce(
-        (sum, item) => sum + item.price * item.quantity,
-        0,
-    );
 
     function scrollToGroup(groupId: string) {
         setActiveGroupId(groupId);
@@ -185,10 +195,76 @@ export function OrderMakePage({
         });
     }
 
-    function addItemToCart(
+    function getCartTotal(items: CartItem[]) {
+        return items.reduce(
+            (sum, item) => sum + item.price * item.quantity,
+            0,
+        );
+    }
+
+    function getCartItemModifications(
         menuItem: OrderMakeMenuItem,
         customization: MenuItemCustomization,
-    ) {
+    ): CartItemModification[] {
+        const includedIngredients = getIngredientsByCodes(
+            menuItem.includedIngredientCodes,
+        );
+        const addOnIngredients = getIngredientsByCodes(
+            menuItem.addOnIngredientCodes,
+        );
+        const modifications: CartItemModification[] = [
+            ...includedIngredients
+                .map<CartItemModification | null>((ingredient) => {
+                    const count =
+                        customization.includedIngredientCounts[ingredient.code] ??
+                        1;
+
+                    if (count === 0) {
+                        return {
+                            code: ingredient.code,
+                            name: ingredient.name,
+                            type: "removed" as const,
+                        };
+                    }
+
+                    if (count > 1) {
+                        return {
+                            code: ingredient.code,
+                            name: ingredient.name,
+                            quantity: count,
+                            type: "added" as const,
+                        };
+                    }
+
+                    return null;
+                })
+                .filter(isCartItemModification),
+            ...addOnIngredients
+                .map<CartItemModification | null>((ingredient) => {
+                    const count =
+                        customization.addOnIngredientCounts[ingredient.code] ?? 0;
+
+                    if (count < 1) {
+                        return null;
+                    }
+
+                    return {
+                        code: ingredient.code,
+                        name: ingredient.name,
+                        quantity: count,
+                        type: "added" as const,
+                    };
+                })
+                .filter(isCartItemModification),
+        ];
+
+        return modifications;
+    }
+
+    function buildCartItem(
+        menuItem: OrderMakeMenuItem,
+        customization: MenuItemCustomization,
+    ): CartItem {
         const cartKey = createCartKey(menuItem, customization);
         const removedIngredientCodes = Object.entries(
             customization.includedIngredientCounts,
@@ -196,14 +272,33 @@ export function OrderMakePage({
             .filter(([, count]) => count === 0)
             .map(([ingredientCode]) => ingredientCode);
 
+        return {
+            addOnIngredientCounts: customization.addOnIngredientCounts,
+            cartKey,
+            id: menuItem.id,
+            includedIngredientCounts: customization.includedIngredientCounts,
+            modifications: getCartItemModifications(menuItem, customization),
+            name: menuItem.name,
+            price: menuItem.price,
+            quantity: customization.quantity,
+            removedIngredientCodes,
+        };
+    }
+
+    function addItemToCart(
+        menuItem: OrderMakeMenuItem,
+        customization: MenuItemCustomization,
+    ) {
+        const nextCartItem = buildCartItem(menuItem, customization);
+
         setCartItems((currentItems) => {
             const existingItem = currentItems.find(
-                (item) => item.cartKey === cartKey,
+                (item) => item.cartKey === nextCartItem.cartKey,
             );
 
             if (existingItem) {
                 return currentItems.map((item) =>
-                    item.cartKey === cartKey
+                    item.cartKey === nextCartItem.cartKey
                         ? {
                               ...item,
                               quantity: item.quantity + customization.quantity,
@@ -212,24 +307,53 @@ export function OrderMakePage({
                 );
             }
 
-            return [
-                ...currentItems,
-                {
-                    addOnIngredientCounts: customization.addOnIngredientCounts,
-                    cartKey,
-                    id: menuItem.id,
-                    includedIngredientCounts:
-                        customization.includedIngredientCounts,
-                    name: menuItem.name,
-                    price: menuItem.price,
-                    quantity: customization.quantity,
-                    removedIngredientCodes,
-                },
-            ];
+            return [...currentItems, nextCartItem];
         });
     }
 
-    function openItemModal(menuItem: OrderMakeMenuItem) {
+    function replaceCartItem(
+        currentItems: CartItem[],
+        cartKeyToReplace: string,
+        nextCartItem: CartItem,
+    ) {
+        const itemIndex = currentItems.findIndex(
+            (item) => item.cartKey === cartKeyToReplace,
+        );
+        const itemsWithoutCurrent = currentItems.filter(
+            (item) => item.cartKey !== cartKeyToReplace,
+        );
+        const duplicateIndex = itemsWithoutCurrent.findIndex(
+            (item) => item.cartKey === nextCartItem.cartKey,
+        );
+
+        if (duplicateIndex >= 0) {
+            return itemsWithoutCurrent.map((item, index) =>
+                index === duplicateIndex
+                    ? {
+                          ...item,
+                          quantity: item.quantity + nextCartItem.quantity,
+                      }
+                    : item,
+            );
+        }
+
+        const safeIndex = itemIndex < 0 ? itemsWithoutCurrent.length : itemIndex;
+
+        return [
+            ...itemsWithoutCurrent.slice(0, safeIndex),
+            nextCartItem,
+            ...itemsWithoutCurrent.slice(safeIndex),
+        ];
+    }
+
+    function openItemModal(
+        menuItem: OrderMakeMenuItem,
+        options: {
+            confirmText?: string;
+            initialCustomization?: MenuItemCustomization;
+            onConfirm?: (customization: MenuItemCustomization) => void;
+        } = {},
+    ) {
         const includedIngredients = getIngredientsByCodes(
             menuItem.includedIngredientCodes,
         );
@@ -237,18 +361,22 @@ export function OrderMakePage({
             menuItem.addOnIngredientCodes,
         );
         const customizationRef: { current: MenuItemCustomization } = {
-            current: {
-                addOnIngredientCounts: Object.fromEntries(
-                    addOnIngredients.map((ingredient) => [ingredient.code, 0]),
-                ),
-                includedIngredientCounts: Object.fromEntries(
-                    includedIngredients.map((ingredient) => [
-                        ingredient.code,
-                        1,
-                    ]),
-                ),
-                quantity: 1,
-            },
+            current:
+                options.initialCustomization ?? {
+                    addOnIngredientCounts: Object.fromEntries(
+                        addOnIngredients.map((ingredient) => [
+                            ingredient.code,
+                            0,
+                        ]),
+                    ),
+                    includedIngredientCounts: Object.fromEntries(
+                        includedIngredients.map((ingredient) => [
+                            ingredient.code,
+                            1,
+                        ]),
+                    ),
+                    quantity: 1,
+                },
         };
 
         modalStore.openModal(
@@ -259,6 +387,7 @@ export function OrderMakePage({
                 description: menuItem.description,
                 imageUrl: menuItem.imageUrl,
                 includedIngredients,
+                initialCustomization: options.initialCustomization,
                 isModifiable: menuItem.isModifiable,
                 name: menuItem.name,
                 onCustomizationChange: (customization) => {
@@ -268,9 +397,16 @@ export function OrderMakePage({
             },
             {
                 title: menuItem.name,
-                confirmText: "Add to Order",
+                confirmText: options.confirmText ?? "Add to Order",
                 cancelText: "Cancel",
-                onConfirm: () => addItemToCart(menuItem, customizationRef.current),
+                onConfirm: () => {
+                    if (options.onConfirm) {
+                        options.onConfirm(customizationRef.current);
+                        return;
+                    }
+
+                    addItemToCart(menuItem, customizationRef.current);
+                },
             },
         );
     }
@@ -289,12 +425,90 @@ export function OrderMakePage({
         );
     }
 
-    function openCartDrawer() {
+    function openCartItemModal(cartKey: string, currentItems: CartItem[]) {
+        const cartItem = currentItems.find((item) => item.cartKey === cartKey);
+        const menuItem = cartItem
+            ? menuItems.find((item) => item.id === cartItem.id)
+            : null;
+
+        if (!cartItem || !menuItem) {
+            return;
+        }
+
+        openItemModal(menuItem, {
+            confirmText: "Update Item",
+            initialCustomization: {
+                addOnIngredientCounts: cartItem.addOnIngredientCounts,
+                includedIngredientCounts: cartItem.includedIngredientCounts,
+                quantity: cartItem.quantity,
+            },
+            onConfirm: (customization) => {
+                const nextCartItem = buildCartItem(menuItem, customization);
+                const nextItems = replaceCartItem(
+                    currentItems,
+                    cartItem.cartKey,
+                    nextCartItem,
+                );
+
+                setCartItems(nextItems);
+                openCartDrawer(nextItems);
+            },
+        });
+    }
+
+    function openCartDrawer(itemsForDrawer = cartItems) {
         drawerStore.openDrawer(
             "ORDER_CART",
             {
-                items: cartItems,
-                total: cartTotal,
+                items: itemsForDrawer,
+                onCancelOrder: () => {
+                    modalStore.openModal(
+                        "CONFIRM_ACTION",
+                        {
+                            message: "Cancel this order?",
+                            details:
+                                "This will remove all items from the current order.",
+                        },
+                        {
+                            title: "Cancel Order",
+                            confirmText: "Cancel Order",
+                            cancelText: "Keep Order",
+                            onConfirm: () => {
+                                setCartItems([]);
+                                drawerStore.closeDrawer();
+                            },
+                        },
+                    );
+                },
+                onEditItem: (cartKey) =>
+                    openCartItemModal(cartKey, itemsForDrawer),
+                onSubmitOrder: () => {
+                    const notesRef = { current: "" };
+
+                    modalStore.openModal(
+                        "CONFIRM_ACTION",
+                        {
+                            message: "Send this order?",
+                            details:
+                                "The order will be sent to the preparation workflow.",
+                            notesLabel: "Notes",
+                            onNotesChange: (notes) => {
+                                notesRef.current = notes;
+                            },
+                        },
+                        {
+                            title: "Send Order",
+                            confirmText: "Send Order",
+                            cancelText: "Back",
+                            onConfirm: () => {
+                                void notesRef.current;
+                                setCartItems([]);
+                                drawerStore.closeDrawer();
+                            },
+                        },
+                    );
+                },
+                total: getCartTotal(itemsForDrawer),
             },
             {
                 title: "Order",
@@ -436,7 +650,7 @@ export function OrderMakePage({
                         type="button"
                         className="order-make-page__order-button"
                         disabled={cartCount === 0}
-                        onClick={openCartDrawer}
+                        onClick={() => openCartDrawer()}
                     >
                         <span>Order</span>
                         <span className="order-make-page__order-count">

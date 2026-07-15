@@ -14,10 +14,19 @@ export type OrderCartDrawerProps = {
     items: Array<{
         cartKey?: string;
         id: string;
+        modifications: Array<{
+            code: string;
+            name: string;
+            quantity?: number;
+            type: "added" | "removed";
+        }>;
         name: string;
         price: number;
         quantity: number;
     }>;
+    onCancelOrder: () => void;
+    onEditItem: (cartKey: string) => void;
+    onSubmitOrder: () => void;
     total: number;
 };
 

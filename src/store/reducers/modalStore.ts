@@ -33,6 +33,9 @@ export type TestModalProps = {
 export type ConfirmActionModalProps = {
     message: string;
     details?: string;
+    initialNotes?: string;
+    notesLabel?: string;
+    onNotesChange?: (notes: string) => void;
 };
 
 export type MenuItemDetailModalProps = {
@@ -49,6 +52,7 @@ export type MenuItemDetailModalProps = {
         imgUrl: string;
         name: string;
     }>;
+    initialCustomization?: MenuItemCustomization;
     isModifiable: boolean;
     name: string;
     onCustomizationChange?: (customization: MenuItemCustomization) => void;

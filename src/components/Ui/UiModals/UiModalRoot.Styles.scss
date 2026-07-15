@@ -145,8 +145,29 @@
 }
 
 .app-modal-body__input {
+    width: 100%;
     min-height: 96px;
+    padding: 10px 12px;
+
+    border: 1px solid var(--color_neutral-300);
+    border-radius: var(--border-radius_8);
+    color: var(--color-text-primary);
+    font-family: inherit;
+    font-size: 15px;
+    line-height: 1.4;
+
     resize: vertical;
+}
+
+.app-modal-body__field {
+    display: grid;
+    gap: 8px;
+
+    span {
+        color: var(--color-text-primary);
+        font-size: 15px;
+        font-weight: 700;
+    }
 }
 
 .ingredient-selector-modal__list {
