@@ -1,5 +1,6 @@
 type OrderCartDrawerProps = {
     items: Array<{
+        cartKey?: string;
         id: string;
         name: string;
         price: number;
@@ -14,7 +15,10 @@ export default function OrderCartDrawer({ items, total }: OrderCartDrawerProps) 
             {items.length > 0 ? (
                 <ul className="app-drawer-cart__list">
                     {items.map((item) => (
-                        <li key={item.id} className="app-drawer-cart__item">
+                        <li
+                            key={item.cartKey ?? item.id}
+                            className="app-drawer-cart__item"
+                        >
                             <div>
                                 <p className="app-drawer-cart__name">
                                     {item.name}

@@ -36,10 +36,29 @@ export type ConfirmActionModalProps = {
 };
 
 export type MenuItemDetailModalProps = {
+    addOnIngredients: Array<{
+        code: string;
+        imgUrl: string;
+        name: string;
+    }>;
     calories: number;
     description: string;
+    imageUrl: string;
+    includedIngredients: Array<{
+        code: string;
+        imgUrl: string;
+        name: string;
+    }>;
+    isModifiable: boolean;
     name: string;
+    onCustomizationChange?: (customization: MenuItemCustomization) => void;
     price: number;
+};
+
+export type MenuItemCustomization = {
+    addOnIngredientCounts: Record<string, number>;
+    includedIngredientCounts: Record<string, number>;
+    quantity: number;
 };
 
 export type IngredientSelectorModalProps = {

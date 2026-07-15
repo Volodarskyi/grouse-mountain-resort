@@ -4,9 +4,7 @@ import "./MenuCreatePage.Styles.scss";
 
 type MenuCreatePageProps = {
     currentLocationId?: string;
-    currentLocationSlug?: string;
     currentOrganizationId?: string;
-    currentOrganizationSlug?: string;
     initialMenuItem?: {
         id: string;
         organizationId: string;
@@ -26,18 +24,21 @@ type MenuCreatePageProps = {
     menuHref: string;
     mode?: "create" | "edit";
     organizationName: string;
+    photoOptions: Array<{
+        fileName: string;
+        imageUrl: string;
+    }>;
 };
 
 export function MenuCreatePage({
     currentLocationId,
-    currentLocationSlug,
     currentOrganizationId,
-    currentOrganizationSlug,
     initialMenuItem,
     locationName,
     menuHref,
     mode = "create",
     organizationName,
+    photoOptions,
 }: MenuCreatePageProps) {
     return (
         <main className="menu-create-page">
@@ -52,12 +53,11 @@ export function MenuCreatePage({
 
             <MenuCreateForm
                 currentLocationId={currentLocationId}
-                currentLocationSlug={currentLocationSlug}
                 currentOrganizationId={currentOrganizationId}
-                currentOrganizationSlug={currentOrganizationSlug}
                 initialMenuItem={initialMenuItem}
                 menuHref={menuHref}
                 mode={mode}
+                photoOptions={photoOptions}
             />
         </main>
     );
