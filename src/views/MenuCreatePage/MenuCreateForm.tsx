@@ -1,6 +1,6 @@
 "use client";
 
-import { Alert, Checkbox, Form, Input, InputNumber, Modal, Select, Upload } from "antd";
+import { Alert, Checkbox, Form, Input, InputNumber, Modal, Select } from "antd";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -26,9 +26,7 @@ type MenuCreateFormValues = {
 
 type MenuCreateFormProps = {
     currentLocationId?: string;
-    currentLocationSlug?: string;
     currentOrganizationId?: string;
-    currentOrganizationSlug?: string;
     initialMenuItem?: {
         id: string;
         organizationId: string;
@@ -46,6 +44,10 @@ type MenuCreateFormProps = {
     };
     menuHref: string;
     mode?: "create" | "edit";
+    photoOptions: Array<{
+        fileName: string;
+        imageUrl: string;
+    }>;
 };
 
 type MenuGroupOption = {
@@ -57,12 +59,6 @@ type MenuGroupOption = {
 type MenuGroupFormValues = {
     name: string;
     icon: string;
-};
-
-type UploadRequestOptions = {
-    file: Blob | File | string;
-    onError?: (error: Error) => void;
-    onSuccess?: (body: unknown) => void;
 };
 
 const addGroupValue = "__add_group__";
@@ -78,12 +74,11 @@ function getMenuGroupIconLabel(icon: string) {
 
 export function MenuCreateForm({
     currentLocationId,
-    currentLocationSlug,
     currentOrganizationId,
-    currentOrganizationSlug,
     initialMenuItem,
     menuHref,
     mode = "create",
+    photoOptions,
 }: MenuCreateFormProps) {
     const router = useRouter();
     const { modalStore } = useStores();
@@ -91,8 +86,6 @@ export function MenuCreateForm({
     const selectedIngredientCodesRef = useRef<string[]>([]);
     const organizationId = currentOrganizationId ?? initialMenuItem?.organizationId;
     const locationId = currentLocationId ?? initialMenuItem?.locationIds[0];
-    const organizationSlug = currentOrganizationSlug;
-    const locationSlug = currentLocationSlug;
     const [groupForm] = Form.useForm<MenuGroupFormValues>();
     const [groups, setGroups] = useState<MenuGroupOption[]>([]);
     const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
@@ -100,7 +93,6 @@ export function MenuCreateForm({
     const [isCreatingGroup, setIsCreatingGroup] = useState(false);
     const [error, setError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isUploadingImage, setIsUploadingImage] = useState(false);
     const [includedIngredientCodes, setIncludedIngredientCodes] = useState(
         initialMenuItem?.includedIngredientCodes ?? [],
     );
@@ -261,58 +253,6 @@ export function MenuCreateForm({
             );
         } finally {
             setIsCreatingGroup(false);
-        }
-    }
-
-    async function handleImageUpload(options: UploadRequestOptions) {
-        if (!organizationSlug || !locationSlug) {
-            const uploadError = new Error("Organization or location is not resolved");
-
-            setError(uploadError.message);
-            options.onError?.(uploadError);
-            return;
-        }
-
-        if (!(options.file instanceof File)) {
-            const uploadError = new Error("Image file is required");
-
-            setError(uploadError.message);
-            options.onError?.(uploadError);
-            return;
-        }
-
-        setIsUploadingImage(true);
-        setError("");
-
-        try {
-            const formData = new FormData();
-
-            formData.append("organizationSlug", organizationSlug);
-            formData.append("locationSlug", locationSlug);
-            formData.append("file", options.file);
-
-            const response = await fetch("/api/menu-item-images", {
-                method: "POST",
-                body: formData,
-            });
-            const result = await response.json();
-
-            if (!response.ok) {
-                throw new Error(result.error ?? "Image upload failed");
-            }
-
-            form.setFieldValue("imageUrl", result.imageUrl);
-            options.onSuccess?.(result);
-        } catch (requestError) {
-            const uploadError =
-                requestError instanceof Error
-                    ? requestError
-                    : new Error("Image upload failed");
-
-            setError(uploadError.message);
-            options.onError?.(uploadError);
-        } finally {
-            setIsUploadingImage(false);
         }
     }
 
@@ -523,10 +463,6 @@ export function MenuCreateForm({
                 <Input />
             </Form.Item>
 
-            <Form.Item name="imageUrl" hidden>
-                <Input />
-            </Form.Item>
-
             <div className="menu-create-page__image-field">
                 <span className="menu-create-page__image-label">Photo</span>
                 <div className="menu-create-page__image-row">
@@ -542,16 +478,54 @@ export function MenuCreateForm({
                             <span>No image</span>
                         )}
                     </span>
-                    <Upload
-                        accept="image/jpeg,image/png,image/webp"
-                        customRequest={handleImageUpload}
-                        maxCount={1}
-                        showUploadList={false}
-                    >
-                        <UiButton type="button" variant="secondary" disabled={isUploadingImage}>
-                            {isUploadingImage ? "Uploading..." : "Upload photo"}
-                        </UiButton>
-                    </Upload>
+                    <Form.Item name="imageUrl" className="menu-create-page__photo-select">
+                        <Select
+                            allowClear
+                            placeholder="Select photo"
+                            optionLabelProp="label"
+                            options={photoOptions.map((photoOption) => ({
+                                label: photoOption.fileName,
+                                value: photoOption.imageUrl,
+                                imageUrl: photoOption.imageUrl,
+                            }))}
+                            labelRender={(option) => {
+                                const photoOption = photoOptions.find(
+                                    (currentPhotoOption) =>
+                                        currentPhotoOption.imageUrl ===
+                                        option.value,
+                                );
+
+                                return photoOption ? (
+                                    <span className="menu-create-page__photo-option">
+                                        <span className="menu-create-page__photo-option-image">
+                                            <Image
+                                                src={photoOption.imageUrl}
+                                                alt=""
+                                                fill
+                                                sizes="32px"
+                                            />
+                                        </span>
+                                        {photoOption.fileName}
+                                    </span>
+                                ) : (
+                                    option.label
+                                );
+                            }}
+                            optionRender={(option) => (
+                                <span className="menu-create-page__photo-option">
+                                    <span className="menu-create-page__photo-option-image">
+                                        <Image
+                                            src={String(option.data.imageUrl)}
+                                            alt=""
+                                            fill
+                                            sizes="32px"
+                                        />
+                                    </span>
+                                    {option.label}
+                                </span>
+                            )}
+                        />
+                    </Form.Item>
                 </div>
             </div>
 
