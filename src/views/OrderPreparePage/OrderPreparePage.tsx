@@ -13,6 +13,7 @@ type PrepareColumn = {
 };
 
 type OrderPreparePageProps = {
+    kitchenHref: string;
     locationHref: string;
     locationName: string;
     navigationLinks: Array<{
@@ -47,6 +48,7 @@ const prepareColumns: PrepareColumn[] = [
 ];
 
 export function OrderPreparePage({
+    kitchenHref,
     locationHref,
     locationName,
     navigationLinks,
@@ -105,7 +107,6 @@ export function OrderPreparePage({
                 </header>
 
                 <section className="order-prepare-page__board-header">
-                    <p className="order-prepare-page__eyebrow">Production</p>
                     <h2>Production Board</h2>
                 </section>
 
@@ -113,28 +114,48 @@ export function OrderPreparePage({
                     className="order-prepare-page__board"
                     aria-label="Order preparation areas"
                 >
-                    {prepareColumns.map((column) => (
-                        <section
-                            key={column.key}
-                            className="order-prepare-page__column"
-                        >
-                            <header className="order-prepare-page__column-header">
-                                <div>
-                                    <h2>{column.title}</h2>
-                                    <p>{column.description}</p>
-                                </div>
-                                <span className="order-prepare-page__count">
-                                    0
-                                </span>
-                            </header>
+                    {prepareColumns.map((column) => {
+                        const content = (
+                            <>
+                                <header className="order-prepare-page__column-header">
+                                    <div>
+                                        <h2>{column.title}</h2>
+                                        <p>{column.description}</p>
+                                    </div>
+                                    <span className="order-prepare-page__count">
+                                        0
+                                    </span>
+                                </header>
 
-                            <div className="order-prepare-page__work-area">
-                                <div className="order-prepare-page__empty">
-                                    <span>No active orders</span>
+                                <div className="order-prepare-page__work-area">
+                                    <div className="order-prepare-page__empty">
+                                        <span>No active orders</span>
+                                    </div>
                                 </div>
-                            </div>
-                        </section>
-                    ))}
+                            </>
+                        );
+
+                        if (column.key === "kitchen") {
+                            return (
+                                <Link
+                                    key={column.key}
+                                    href={kitchenHref}
+                                    className="order-prepare-page__column order-prepare-page__column--link"
+                                >
+                                    {content}
+                                </Link>
+                            );
+                        }
+
+                        return (
+                            <section
+                                key={column.key}
+                                className="order-prepare-page__column"
+                            >
+                                {content}
+                            </section>
+                        );
+                    })}
                 </section>
             </section>
         </main>

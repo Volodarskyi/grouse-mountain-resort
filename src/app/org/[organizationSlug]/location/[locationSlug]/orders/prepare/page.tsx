@@ -28,6 +28,7 @@ export default async function PrepareOrderPage({
         <OrderPreparePage
             organizationName={tenant.organization.name}
             organizationHref={`/org/${organizationSlug}`}
+            kitchenHref={`${locationHref}/kitchen`}
             locationName={tenant.location.name}
             locationHref={locationHref}
             navigationLinks={[
