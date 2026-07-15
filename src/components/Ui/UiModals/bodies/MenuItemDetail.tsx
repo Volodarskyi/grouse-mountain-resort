@@ -11,6 +11,7 @@ export default function MenuItemDetail({
     description,
     imageUrl,
     includedIngredients,
+    initialCustomization,
     isModifiable,
     name,
     onCustomizationChange,
@@ -31,12 +32,22 @@ export default function MenuItemDetail({
         [addOnIngredients],
     );
     const [includedIngredientCounts, setIncludedIngredientCounts] =
-        useState<Record<string, number>>(initialIncludedCounts);
+        useState<Record<string, number>>(
+            initialCustomization?.includedIngredientCounts ?? initialIncludedCounts,
+        );
     const [addOnIngredientCounts, setAddOnIngredientCounts] =
-        useState<Record<string, number>>(initialAddOnCounts);
-    const [quantity, setQuantity] = useState(1);
-    const [isModificationsOpen, setIsModificationsOpen] = useState(false);
-    const [isAddOnsOpen, setIsAddOnsOpen] = useState(false);
+        useState<Record<string, number>>(
+            initialCustomization?.addOnIngredientCounts ?? initialAddOnCounts,
+        );
+    const [quantity, setQuantity] = useState(
+        initialCustomization?.quantity ?? 1,
+    );
+    const [isModificationsOpen, setIsModificationsOpen] = useState(
+        Boolean(initialCustomization),
+    );
+    const [isAddOnsOpen, setIsAddOnsOpen] = useState(
+        Boolean(initialCustomization),
+    );
 
     useEffect(() => {
         onCustomizationChange?.({
