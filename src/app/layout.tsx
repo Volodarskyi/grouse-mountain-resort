@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 // import { Montserrat } from "next/font/google";
 import { Lato } from "next/font/google";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
@@ -20,11 +20,26 @@ const lato = Lato({
 });
 
 export const metadata: Metadata = {
-    title: "Grouse Mountain",
-    description: "Restorator AI",
-    icons: {
-        icon: "/GROUSE-FAVICON_800-round.png",
+    title: {
+        default: "Horecan AI",
+        template: "%s | Horecan AI",
     },
+    description: "Restaurant operations app for Grouse Mountain Resort",
+    applicationName: "Horecan AI",
+    manifest: "/manifest.webmanifest",
+    appleWebApp: {
+        capable: true,
+        title: "Horecan AI",
+        statusBarStyle: "black-translucent",
+    },
+    icons: {
+        icon: "/assets/icons/pwa/horecan-pwa-192.png",
+        apple: "/assets/icons/pwa/horecan-pwa-180.png",
+    },
+};
+
+export const viewport: Viewport = {
+    themeColor: "#820024",
 };
 
 export default function RootLayout({

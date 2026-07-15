@@ -290,6 +290,19 @@ menu items by `code` within that location. Transfer JSON uses portable
 target database `Recipe`; if the recipe does not exist yet, the menu item is
 imported without `recipeId`.
 
+## PWA
+
+The app exposes install metadata through `src/app/manifest.ts` and iPad/iOS
+standalone metadata through `src/app/layout.tsx`. PWA icons live under
+`public/assets/icons/pwa` and use the Grouse Mountain white logo on the primary
+red background. The app is configured for `display: standalone` and landscape
+orientation so iPad users can install it from the browser share menu, with
+Safari "Add to Home Screen" as the most reliable path.
+
+No service worker cache strategy is enabled yet. Add one only after defining
+how dynamic order, menu, MongoDB, and future Ably traffic should be cached or
+explicitly excluded from caching.
+
 ## Seeded Organization
 
 The first seeded organization is `Grouse Mountain Resort`:
