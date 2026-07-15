@@ -12,6 +12,7 @@ export type OrderNavDrawerProps = {
 
 export type OrderCartDrawerProps = {
     items: Array<{
+        cartKey?: string;
         id: string;
         name: string;
         price: number;

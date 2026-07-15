@@ -4,6 +4,7 @@ import { Alert } from "antd";
 import {
     getMenuItemsForLocation,
 } from "@/features/menu/lib/menuItems";
+import { getMenuItemPhotoOptions } from "@/features/menu/lib/menuItemPhotos";
 import { resolveTenantContext } from "@/features/tenancy/lib/tenancy";
 import { MenuCreatePage } from "@/views/MenuCreatePage/MenuCreatePage";
 
@@ -24,7 +25,10 @@ export default async function MenuCreateModulePage({
         notFound();
     }
 
-    const menuData = await getMenuItemsForLocation(organizationSlug, locationSlug);
+    const [menuData, photoOptions] = await Promise.all([
+        getMenuItemsForLocation(organizationSlug, locationSlug),
+        getMenuItemPhotoOptions(locationSlug),
+    ]);
     const menuHref = `/org/${organizationSlug}/location/${locationSlug}/menu`;
 
     if (!menuData) {
@@ -43,12 +47,11 @@ export default async function MenuCreateModulePage({
     return (
         <MenuCreatePage
             currentLocationId={menuData.location.id}
-            currentLocationSlug={locationSlug}
             currentOrganizationId={menuData.organization.id}
-            currentOrganizationSlug={organizationSlug}
             locationName={menuData.location.name}
             menuHref={menuHref}
             organizationName={menuData.organization.name}
+            photoOptions={photoOptions}
         />
     );
 }

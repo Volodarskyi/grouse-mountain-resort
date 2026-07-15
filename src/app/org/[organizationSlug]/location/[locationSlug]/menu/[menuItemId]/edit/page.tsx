@@ -5,6 +5,7 @@ import {
     getMenuItemForEdit,
     getMenuItemsForLocation,
 } from "@/features/menu/lib/menuItems";
+import { getMenuItemPhotoOptions } from "@/features/menu/lib/menuItemPhotos";
 import { resolveTenantContext } from "@/features/tenancy/lib/tenancy";
 import { MenuCreatePage } from "@/views/MenuCreatePage/MenuCreatePage";
 
@@ -26,9 +27,10 @@ export default async function MenuEditModulePage({
         notFound();
     }
 
-    const [menuData, menuItem] = await Promise.all([
+    const [menuData, menuItem, photoOptions] = await Promise.all([
         getMenuItemsForLocation(organizationSlug, locationSlug),
         getMenuItemForEdit(menuItemId),
+        getMenuItemPhotoOptions(locationSlug),
     ]);
     const menuHref = `/org/${organizationSlug}/location/${locationSlug}/menu`;
 
@@ -52,14 +54,13 @@ export default async function MenuEditModulePage({
     return (
         <MenuCreatePage
             currentLocationId={menuData.location.id}
-            currentLocationSlug={locationSlug}
             currentOrganizationId={menuData.organization.id}
-            currentOrganizationSlug={organizationSlug}
             initialMenuItem={menuItem}
             locationName={menuData.location.name}
             menuHref={menuHref}
             mode="edit"
             organizationName={menuData.organization.name}
+            photoOptions={photoOptions}
         />
     );
 }
