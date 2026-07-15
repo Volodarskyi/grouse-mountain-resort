@@ -32,10 +32,16 @@ export type TestModalProps = {
 
 export type ConfirmActionModalProps = {
     message: string;
+    customerNameLabel?: string;
     details?: string;
     initialNotes?: string;
     notesLabel?: string;
+    onCustomerNameChange?: (customerName: string) => void;
     onNotesChange?: (notes: string) => void;
+    summaryItems?: Array<{
+        label: string;
+        value: string;
+    }>;
 };
 
 export type MenuItemDetailModalProps = {

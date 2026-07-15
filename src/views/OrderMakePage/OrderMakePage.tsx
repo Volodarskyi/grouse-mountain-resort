@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { message } from "antd";
 import { useMemo, useRef, useState, type CSSProperties } from "react";
 
 import { UiButton } from "@/components/Ui/UiButton/UiButton";
@@ -69,6 +70,19 @@ function isCartItemModification(
     modification: CartItemModification | null,
 ): modification is CartItemModification {
     return Boolean(modification);
+}
+
+function createOrderNumber() {
+    return String(Math.floor(1000000 + Math.random() * 9000000));
+}
+
+function formatOrderTimestamp(timestamp: number) {
+    return new Intl.DateTimeFormat("en-CA", {
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        month: "short",
+    }).format(new Date(timestamp));
 }
 
 export function OrderMakePage({
@@ -483,27 +497,72 @@ export function OrderMakePage({
                 onEditItem: (cartKey) =>
                     openCartItemModal(cartKey, itemsForDrawer),
                 onSubmitOrder: () => {
+                    const customerNameRef = { current: "" };
                     const notesRef = { current: "" };
+                    const createdAtTimestamp = Date.now();
+                    const orderNumber = createOrderNumber();
 
                     modalStore.openModal(
                         "CONFIRM_ACTION",
                         {
+                            customerNameLabel: "Customer name (optional)",
                             message: "Send this order?",
                             details:
                                 "The order will be sent to the preparation workflow.",
                             notesLabel: "Notes",
+                            onCustomerNameChange: (customerName) => {
+                                customerNameRef.current = customerName;
+                            },
                             onNotesChange: (notes) => {
                                 notesRef.current = notes;
                             },
+                            summaryItems: [
+                                {
+                                    label: "Order number",
+                                    value: orderNumber,
+                                },
+                                {
+                                    label: "Created",
+                                    value: formatOrderTimestamp(
+                                        createdAtTimestamp,
+                                    ),
+                                },
+                                {
+                                    label: "Items",
+                                    value: String(
+                                        itemsForDrawer.reduce(
+                                            (sum, item) => sum + item.quantity,
+                                            0,
+                                        ),
+                                    ),
+                                },
+                                {
+                                    label: "Total",
+                                    value: `$${getCartTotal(itemsForDrawer).toFixed(2)}`,
+                                },
+                            ],
                         },
                         {
                             title: "Send Order",
                             confirmText: "Send Order",
                             cancelText: "Back",
                             onConfirm: () => {
-                                void notesRef.current;
-                                setCartItems([]);
-                                drawerStore.closeDrawer();
+                                try {
+                                    void customerNameRef.current;
+                                    void notesRef.current;
+                                    // Keep raw timestamp for the future order payload.
+                                    void createdAtTimestamp;
+                                    void orderNumber;
+                                    setCartItems([]);
+                                    drawerStore.closeDrawer();
+                                    void message.success(
+                                        `Order ${orderNumber} sent`,
+                                    );
+                                } catch {
+                                    void message.error(
+                                        "Order was not sent. Please try again.",
+                                    );
+                                }
                             },
                         },
                     );
