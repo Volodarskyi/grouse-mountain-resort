@@ -3,9 +3,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import { message } from "antd";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useRef, useState, type CSSProperties } from "react";
 
 import { UiButton } from "@/components/Ui/UiButton/UiButton";
+import { createOrder } from "@/features/orders/api/ordersApi";
 import {
     ingredients,
     type Ingredient,
@@ -37,6 +39,7 @@ type OrderMakeMenuItem = {
 type OrderMakePageProps = {
     locationHref: string;
     locationName: string;
+    locationSlug: string;
     menuGroups: OrderMakeMenuGroup[];
     menuItems: OrderMakeMenuItem[];
     navigationLinks: Array<{
@@ -45,6 +48,7 @@ type OrderMakePageProps = {
     }>;
     organizationHref: string;
     organizationName: string;
+    organizationSlug: string;
 };
 
 type CartItemModification = {
@@ -72,8 +76,12 @@ function isCartItemModification(
     return Boolean(modification);
 }
 
-function createOrderNumber() {
-    return String(Math.floor(1000000 + Math.random() * 9000000));
+function createClientRequestId() {
+    if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+        return crypto.randomUUID();
+    }
+
+    return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
 function formatOrderTimestamp(timestamp: number) {
@@ -88,13 +96,16 @@ function formatOrderTimestamp(timestamp: number) {
 export function OrderMakePage({
     locationHref,
     locationName,
+    locationSlug,
     menuGroups,
     menuItems,
     navigationLinks,
     organizationHref,
     organizationName,
+    organizationSlug,
 }: OrderMakePageProps) {
     const { drawerStore, modalStore } = useStores();
+    const queryClient = useQueryClient();
     const groupsBarRef = useRef<HTMLElement>(null);
     const workAreaRef = useRef<HTMLDivElement>(null);
     const groupRefs = useRef<Record<string, HTMLElement | null>>({});
@@ -119,6 +130,28 @@ export function OrderMakePage({
     );
     const [activeGroupId, setActiveGroupId] = useState(groupedMenu[0]?.id ?? "");
     const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+    const createOrderMutation = useMutation({
+        mutationFn: ({
+            locationSlug: nextLocationSlug,
+            organizationSlug: nextOrganizationSlug,
+            payload,
+        }: {
+            locationSlug: string;
+            organizationSlug: string;
+            payload: Parameters<typeof createOrder>[2];
+        }) => createOrder(nextOrganizationSlug, nextLocationSlug, payload),
+        onSuccess: (order) => {
+            setCartItems([]);
+            drawerStore.closeDrawer();
+            void queryClient.invalidateQueries({
+                queryKey: ["orders", organizationSlug, locationSlug],
+            });
+            void message.success(`Order ${order.orderNumber} sent`);
+        },
+        onError: () => {
+            void message.error("Order was not sent. Please try again.");
+        },
+    });
 
     function scrollToGroup(groupId: string) {
         setActiveGroupId(groupId);
@@ -500,7 +533,6 @@ export function OrderMakePage({
                     const customerNameRef = { current: "" };
                     const notesRef = { current: "" };
                     const createdAtTimestamp = Date.now();
-                    const orderNumber = createOrderNumber();
 
                     modalStore.openModal(
                         "CONFIRM_ACTION",
@@ -519,7 +551,7 @@ export function OrderMakePage({
                             summaryItems: [
                                 {
                                     label: "Order number",
-                                    value: orderNumber,
+                                    value: "Assigned on send",
                                 },
                                 {
                                     label: "Created",
@@ -547,22 +579,20 @@ export function OrderMakePage({
                             confirmText: "Send Order",
                             cancelText: "Back",
                             onConfirm: () => {
-                                try {
-                                    void customerNameRef.current;
-                                    void notesRef.current;
-                                    // Keep raw timestamp for the future order payload.
-                                    void createdAtTimestamp;
-                                    void orderNumber;
-                                    setCartItems([]);
-                                    drawerStore.closeDrawer();
-                                    void message.success(
-                                        `Order ${orderNumber} sent`,
-                                    );
-                                } catch {
-                                    void message.error(
-                                        "Order was not sent. Please try again.",
-                                    );
-                                }
+                                createOrderMutation.mutate({
+                                    locationSlug,
+                                    organizationSlug,
+                                    payload: {
+                                        clientRequestId: createClientRequestId(),
+                                        customerName: customerNameRef.current,
+                                        items: itemsForDrawer.map((item) => ({
+                                            menuItemId: item.id,
+                                            modifications: item.modifications,
+                                            quantity: item.quantity,
+                                        })),
+                                        notes: notesRef.current,
+                                    },
+                                });
                             },
                         },
                     );

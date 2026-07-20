@@ -44,8 +44,10 @@ export default async function MakeOrderPage({ params }: MakeOrderPageProps) {
         <OrderMakePage
             organizationName={menuData.organization.name}
             organizationHref={`/org/${organizationSlug}`}
+            organizationSlug={organizationSlug}
             locationName={menuData.location.name}
             locationHref={locationBaseHref}
+            locationSlug={locationSlug}
             menuGroups={menuData.menuGroups}
             menuItems={menuData.menuItems}
             navigationLinks={[

@@ -17,6 +17,7 @@ The project uses one routing standard:
 /org/[organizationSlug]/location/[locationSlug]/orders/public
 /org/[organizationSlug]/location/[locationSlug]/orders/make
 /org/[organizationSlug]/location/[locationSlug]/orders/prepare
+/org/[organizationSlug]/location/[locationSlug]/orders/prepare/expo
 /org/[organizationSlug]/location/[locationSlug]/kitchen
 /org/[organizationSlug]/location/[locationSlug]/menu
 /org/[organizationSlug]/location/[locationSlug]/recipes
@@ -252,6 +253,7 @@ Orders module routes:
 /org/[organizationSlug]/location/[locationSlug]/orders/public
 /org/[organizationSlug]/location/[locationSlug]/orders/make
 /org/[organizationSlug]/location/[locationSlug]/orders/prepare
+/org/[organizationSlug]/location/[locationSlug]/orders/prepare/expo
 ```
 
 `/orders` is the staff hub for order tools. `/orders/public` is reserved for a

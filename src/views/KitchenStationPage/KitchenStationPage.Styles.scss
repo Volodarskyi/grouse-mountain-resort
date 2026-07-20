@@ -101,7 +101,7 @@ body:has(.kitchen-station-page) .header {
   display: grid;
   grid-template-rows: minmax(0, 1fr);
 
-  border: 3px solid var(--color-primary);
+  border: 3px dotted var(--color_neutral-500);
   border-radius: 18px;
   background: var(--color-background);
 }
@@ -149,19 +149,54 @@ body:has(.kitchen-station-page) .header {
   left: 18px;
 
   min-height: 36px;
-  padding: 0 24px;
+  padding: 4px 14px;
 
   display: inline-flex;
   align-items: center;
-  gap: 38px;
+  gap: 12px;
 
   border-radius: var(--radius-full);
-  background: var(--color-primary);
+  background: var(--color_neutral-700);
   color: var(--color-white);
 
   font-size: 18px;
   font-weight: 800;
   line-height: 1;
+}
+
+.kitchen-station-page__order-position {
+  min-width: 42px;
+  text-align: center;
+}
+
+.kitchen-station-page__meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.kitchen-station-page__meta-label {
+  color: var(--color_neutral-200);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.kitchen-station-page__meta-item strong {
+  min-height: 26px;
+  padding: 0 10px;
+
+  display: inline-flex;
+  align-items: center;
+
+  border: 1px solid var(--color_neutral-300);
+  border-radius: var(--radius-full);
+  background: var(--color-white);
+  color: var(--color-primary);
+
+  font-size: 16px;
+  font-weight: 900;
 }
 
 .kitchen-station-page__items {
@@ -172,6 +207,7 @@ body:has(.kitchen-station-page) .header {
 }
 
 .kitchen-station-page__item {
+  position: relative;
   min-height: 72px;
   padding: 4px 8px;
 
@@ -193,6 +229,27 @@ body:has(.kitchen-station-page) .header {
     line-height: 1.12;
   }
 
+}
+
+.kitchen-station-page__item--done {
+  border-color: rgba(25, 135, 84, 0.58);
+  background: var(--color-white);
+
+  &::after {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+
+    border-radius: inherit;
+    background: rgba(25, 135, 84, 0.18);
+    pointer-events: none;
+  }
+
+  h2 {
+    color: #146c43;
+  }
 }
 
 .kitchen-station-page__done-button {
@@ -218,6 +275,36 @@ body:has(.kitchen-station-page) .header {
 
   img {
     display: block;
+  }
+}
+
+.kitchen-station-page__item-status {
+  width: 156px;
+  min-height: 48px;
+  padding: 6px 10px;
+
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 3px;
+
+  border: 2px solid var(--color_neutral-300);
+  border-radius: var(--radius-full);
+  background: var(--color-white);
+  color: var(--color-primary);
+
+  span {
+    color: var(--color_neutral-700);
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  strong {
+    font-size: 14px;
+    font-weight: 900;
+    line-height: 1;
   }
 }
 
@@ -267,6 +354,28 @@ body:has(.kitchen-station-page) .header {
   }
 }
 
+.kitchen-station-page__complete-button {
+  min-height: 58px;
+  margin: 16px 2px 0;
+
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-white);
+  cursor: pointer;
+
+  font-family: inherit;
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.72;
+  }
+}
+
 .kitchen-station-page__notes {
   position: absolute;
   right: 18px;
@@ -281,7 +390,7 @@ body:has(.kitchen-station-page) .header {
   gap: 6px;
 
   border-radius: var(--radius-full);
-  background: var(--color-primary);
+  background: var(--color_neutral-700);
   color: var(--color-white);
 
   font-size: 22px;
@@ -332,6 +441,10 @@ body:has(.kitchen-station-page) .header {
       width: 140px;
       height: 48px;
       font-size: 24px;
+    }
+
+    .kitchen-station-page__item-status {
+      width: 166px;
     }
   }
 
