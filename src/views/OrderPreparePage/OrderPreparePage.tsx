@@ -1,32 +1,49 @@
 "use client";
 
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 
+import {
+    getActiveOrders,
+    type OrderDto,
+} from "@/features/orders/api/ordersApi";
+import { isOrderItemDone } from "@/features/orders/lib/orderWorkflow";
 import { useStores } from "@/store/hooks/useStores";
+import type { ProductionArea } from "@/features/workstations/model/workstationConstants";
 
 import "./OrderPreparePage.Styles.scss";
 
 type PrepareColumn = {
     description: string;
-    key: string;
+    key: ProductionArea;
     title: string;
 };
 
 type OrderPreparePageProps = {
-    kitchenHref: string;
     locationHref: string;
     locationName: string;
+    locationSlug: string;
     navigationLinks: Array<{
         href: string;
         label: string;
     }>;
     organizationHref: string;
     organizationName: string;
+    organizationSlug: string;
+    stationHrefs: Partial<Record<ProductionArea, string>>;
+};
+
+type ColumnOrder = {
+    createdAt: string;
+    id: string;
+    itemCount: number;
+    orderNumber: string;
 };
 
 const prepareColumns: PrepareColumn[] = [
     {
-        key: "front-desk",
+        key: "front_desk",
         title: "Front Desk",
         description: "Accept, assemble, pack, and hand orders to guests.",
     },
@@ -47,15 +64,97 @@ const prepareColumns: PrepareColumn[] = [
     },
 ];
 
+function formatElapsedWaitTime(createdAt: string, now: number) {
+    const createdAtTime = new Date(createdAt).getTime();
+
+    if (!createdAt || Number.isNaN(createdAtTime)) {
+        return "00:00";
+    }
+
+    const elapsedSeconds = Math.max(0, Math.floor((now - createdAtTime) / 1000));
+    const minutes = Math.floor(elapsedSeconds / 60);
+    const seconds = elapsedSeconds % 60;
+
+    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+}
+
+function formatOrderNumber(orderNumber: string) {
+    return orderNumber.padStart(7, "0");
+}
+
+function isExpoVisibleOrder(order: OrderDto) {
+    return order.status !== "completed" && order.status !== "cancelled";
+}
+
+function hasPendingStationItems(order: OrderDto, productionArea: ProductionArea) {
+    return order.items.some(
+        (item) =>
+            item.productionArea === productionArea &&
+            item.status !== "cancelled" &&
+            !isOrderItemDone(item.status),
+    );
+}
+
+function getColumnOrders(
+    orders: OrderDto[],
+    productionArea: ProductionArea,
+): ColumnOrder[] {
+    return orders
+        .map((order) => {
+            const isExpoColumn = productionArea === "expo";
+            const isExpoVisible = isExpoVisibleOrder(order);
+            const itemCount =
+                isExpoColumn || hasPendingStationItems(order, productionArea)
+                    ? order.items
+                          .filter((item) =>
+                              isExpoColumn
+                                  ? true
+                                  : item.productionArea === productionArea,
+                          )
+                          .reduce((sum, item) => sum + item.quantity, 0)
+                    : 0;
+            const isColumnVisible = isExpoColumn
+                ? isExpoVisible
+                : hasPendingStationItems(order, productionArea);
+
+            return {
+                createdAt: order.createdAt,
+                id: order.id,
+                itemCount: isColumnVisible ? itemCount : 0,
+                orderNumber: formatOrderNumber(order.orderNumber),
+            };
+        })
+        .filter((order) => order.itemCount > 0);
+}
+
 export function OrderPreparePage({
-    kitchenHref,
     locationHref,
     locationName,
+    locationSlug,
     navigationLinks,
     organizationHref,
     organizationName,
+    organizationSlug,
+    stationHrefs,
 }: OrderPreparePageProps) {
     const { drawerStore } = useStores();
+    const [now, setNow] = useState(() => Date.now());
+    const { data: orders = [] } = useQuery({
+        queryFn: () => getActiveOrders(organizationSlug, locationSlug),
+        queryKey: ["orders", organizationSlug, locationSlug],
+        refetchOnMount: "always",
+        refetchInterval: 3000,
+    });
+
+    useEffect(() => {
+        const intervalId = window.setInterval(() => {
+            setNow(Date.now());
+        }, 1000);
+
+        return () => {
+            window.clearInterval(intervalId);
+        };
+    }, []);
 
     function openMenuDrawer() {
         drawerStore.openDrawer(
@@ -115,6 +214,7 @@ export function OrderPreparePage({
                     aria-label="Order preparation areas"
                 >
                     {prepareColumns.map((column) => {
+                        const columnOrders = getColumnOrders(orders, column.key);
                         const content = (
                             <>
                                 <header className="order-prepare-page__column-header">
@@ -123,23 +223,35 @@ export function OrderPreparePage({
                                         <p>{column.description}</p>
                                     </div>
                                     <span className="order-prepare-page__count">
-                                        0
+                                        {columnOrders.length}
                                     </span>
                                 </header>
 
                                 <div className="order-prepare-page__work-area">
-                                    <div className="order-prepare-page__empty">
-                                        <span>No active orders</span>
-                                    </div>
+                                    {columnOrders.length > 0 ? (
+                                        columnOrders.map((order) => (
+                                            <OrderPrepareSummary
+                                                key={order.id}
+                                                now={now}
+                                                order={order}
+                                            />
+                                        ))
+                                    ) : (
+                                        <div className="order-prepare-page__empty">
+                                            <span>No active orders</span>
+                                        </div>
+                                    )}
                                 </div>
                             </>
                         );
 
-                        if (column.key === "kitchen") {
+                        const stationHref = stationHrefs[column.key];
+
+                        if (stationHref) {
                             return (
                                 <Link
                                     key={column.key}
-                                    href={kitchenHref}
+                                    href={stationHref}
                                     className="order-prepare-page__column order-prepare-page__column--link"
                                 >
                                     {content}
@@ -159,5 +271,28 @@ export function OrderPreparePage({
                 </section>
             </section>
         </main>
+    );
+}
+
+function OrderPrepareSummary({
+    now,
+    order,
+}: {
+    now: number;
+    order: ColumnOrder;
+}) {
+    return (
+        <div className="order-prepare-page__order-row">
+            <span>
+                ORDER:<strong>{order.orderNumber}</strong>
+            </span>
+            <span>
+                WAIT:
+                <strong>{formatElapsedWaitTime(order.createdAt, now)}</strong>
+            </span>
+            <span>
+                ITEMS:<strong>{order.itemCount}</strong>
+            </span>
+        </div>
     );
 }

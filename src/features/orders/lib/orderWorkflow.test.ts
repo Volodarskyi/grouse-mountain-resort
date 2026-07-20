@@ -4,6 +4,7 @@ import {
     buildOrderItemSnapshot,
     canTransitionOrderItemStatus,
     canTransitionOrderStatus,
+    getNextOrderStatusForItems,
 } from "./orderWorkflow";
 
 describe("buildOrderItemSnapshot", () => {
@@ -16,6 +17,7 @@ describe("buildOrderItemSnapshot", () => {
                 station: "grill",
             },
             2,
+            [],
             {
                 id: "64f1f77bcf1f7f0012345679",
                 name: "Station 1 - Patties",
@@ -30,6 +32,8 @@ describe("buildOrderItemSnapshot", () => {
             productionArea: "kitchen",
             workstationId: "64f1f77bcf1f7f0012345679",
             workstationNameSnapshot: "Station 1 - Patties",
+            imageUrlSnapshot: "",
+            modifications: [],
             quantity: 2,
             status: "queued",
         });
@@ -49,6 +53,47 @@ describe("buildOrderItemSnapshot", () => {
         expect(snapshot.productionArea).toBe("front_desk");
         expect(snapshot.workstationId).toBeUndefined();
     });
+
+    it("keeps menu item customization snapshots", () => {
+        const snapshot = buildOrderItemSnapshot(
+            {
+                id: "64f1f77bcf1f7f0012345681",
+                imageUrl: "/burger.png",
+                name: "Burger",
+                price: 12,
+                station: "grill",
+            },
+            1,
+            [
+                {
+                    code: "onion",
+                    name: "Onion",
+                    type: "removed",
+                },
+                {
+                    code: "cheese",
+                    name: "Cheese",
+                    quantity: 2,
+                    type: "added",
+                },
+            ],
+        );
+
+        expect(snapshot.imageUrlSnapshot).toBe("/burger.png");
+        expect(snapshot.modifications).toEqual([
+            {
+                code: "onion",
+                name: "Onion",
+                type: "removed",
+            },
+            {
+                code: "cheese",
+                name: "Cheese",
+                quantity: 2,
+                type: "added",
+            },
+        ]);
+    });
 });
 
 describe("canTransitionOrderStatus", () => {
@@ -67,6 +112,67 @@ describe("canTransitionOrderStatus", () => {
     it("rejects reopening completed orders", () => {
         expect(canTransitionOrderStatus("completed", "in_progress")).toBe(false);
     });
+
+    it("moves a submitted order to in progress when some items are done", () => {
+        expect(getNextOrderStatusForItems("submitted", ["ready", "queued"])).toBe(
+            "in_progress",
+        );
+    });
+
+    it("moves an order to ready when every active item is done", () => {
+        expect(getNextOrderStatusForItems("submitted", ["ready"])).toBe("ready");
+        expect(
+            getNextOrderStatusForItems("in_progress", ["ready", "packed"]),
+        ).toBe("ready");
+    });
+
+    it("moves an order to ready when all production station items are done", () => {
+        expect(
+            getNextOrderStatusForItems("in_progress", [
+                {
+                    productionArea: "front_desk",
+                    status: "ready",
+                },
+                {
+                    productionArea: "kitchen",
+                    status: "ready",
+                },
+                {
+                    productionArea: "bar",
+                    status: "ready",
+                },
+                {
+                    productionArea: "expo",
+                    status: "queued",
+                },
+            ]),
+        ).toBe("ready");
+    });
+
+    it("keeps an order in progress while any production station item is not done", () => {
+        expect(
+            getNextOrderStatusForItems("in_progress", [
+                {
+                    productionArea: "kitchen",
+                    status: "ready",
+                },
+                {
+                    productionArea: "bar",
+                    status: "queued",
+                },
+                {
+                    productionArea: "expo",
+                    status: "queued",
+                },
+            ]),
+        ).toBeNull();
+    });
+
+    it("moves a ready order back to in progress when an item is undone", () => {
+        expect(getNextOrderStatusForItems("ready", ["ready", "queued"])).toBe(
+            "in_progress",
+        );
+    });
 });
 
 describe("canTransitionOrderItemStatus", () => {
@@ -80,5 +186,14 @@ describe("canTransitionOrderItemStatus", () => {
 
     it("rejects changing packed items", () => {
         expect(canTransitionOrderItemStatus("packed", "ready")).toBe(false);
+    });
+
+    it("allows a station to mark a queued item ready from the Done button", () => {
+        expect(canTransitionOrderItemStatus("queued", "ready")).toBe(true);
+    });
+
+    it("allows undoing a ready item back to its previous workflow status", () => {
+        expect(canTransitionOrderItemStatus("ready", "queued")).toBe(true);
+        expect(canTransitionOrderItemStatus("ready", "preparing")).toBe(true);
     });
 });

@@ -23,6 +23,35 @@ export const orderItemStatuses = [
     "cancelled",
 ] as const;
 
+export const orderSources = ["staff", "public"] as const;
+
+const orderItemModificationSchema = new Schema(
+    {
+        code: {
+            type: String,
+            required: true,
+            trim: true,
+        },
+        name: {
+            type: String,
+            required: true,
+            trim: true,
+        },
+        quantity: {
+            type: Number,
+            min: 1,
+        },
+        type: {
+            type: String,
+            enum: ["added", "removed"],
+            required: true,
+        },
+    },
+    {
+        _id: false,
+    },
+);
+
 const orderStatusHistorySchema = new Schema(
     {
         fromStatus: {
@@ -89,6 +118,15 @@ const orderItemSchema = new Schema(
             trim: true,
             default: "",
         },
+        imageUrlSnapshot: {
+            type: String,
+            trim: true,
+            default: "",
+        },
+        modifications: {
+            type: [orderItemModificationSchema],
+            default: [],
+        },
         quantity: {
             type: Number,
             required: true,
@@ -98,6 +136,10 @@ const orderItemSchema = new Schema(
             type: String,
             enum: orderItemStatuses,
             default: "queued",
+        },
+        previousStatus: {
+            type: String,
+            enum: orderItemStatuses,
         },
         claimedByUserId: {
             type: Schema.Types.ObjectId,
@@ -139,9 +181,29 @@ const orderSchema = new Schema(
             required: true,
             trim: true,
         },
+        businessDate: {
+            type: String,
+            required: true,
+            trim: true,
+        },
         clientRequestId: {
             type: String,
             trim: true,
+        },
+        customerName: {
+            type: String,
+            trim: true,
+            default: "",
+        },
+        notes: {
+            type: String,
+            trim: true,
+            default: "",
+        },
+        source: {
+            type: String,
+            enum: orderSources,
+            default: "staff",
         },
         status: {
             type: String,
@@ -188,7 +250,7 @@ const orderSchema = new Schema(
 );
 
 orderSchema.index(
-    { organizationId: 1, locationId: 1, orderNumber: 1 },
+    { organizationId: 1, locationId: 1, businessDate: 1, orderNumber: 1 },
     { unique: true },
 );
 orderSchema.index(
@@ -199,9 +261,17 @@ orderSchema.index(
     },
 );
 orderSchema.index({ organizationId: 1, locationId: 1, status: 1, updatedAt: -1 });
+orderSchema.index({
+    organizationId: 1,
+    locationId: 1,
+    businessDate: 1,
+    status: 1,
+    updatedAt: -1,
+});
 
 export type OrderStatus = (typeof orderStatuses)[number];
 export type OrderItemStatus = (typeof orderItemStatuses)[number];
+export type OrderSource = (typeof orderSources)[number];
 export type OrderDocument = InferSchemaType<typeof orderSchema>;
 
 const OrderModel = models.Order || model("Order", orderSchema);

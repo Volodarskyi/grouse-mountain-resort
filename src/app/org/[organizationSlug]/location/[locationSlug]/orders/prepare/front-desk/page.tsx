@@ -3,16 +3,16 @@ import { notFound } from "next/navigation";
 import { resolveTenantContext } from "@/features/tenancy/lib/tenancy";
 import { KitchenStationPage } from "@/views/KitchenStationPage/KitchenStationPage";
 
-type KitchenModulePageProps = {
+type FrontDeskStationPageProps = {
     params: Promise<{
         organizationSlug: string;
         locationSlug: string;
     }>;
 };
 
-export default async function KitchenModulePage({
+export default async function FrontDeskStationPage({
     params,
-}: KitchenModulePageProps) {
+}: FrontDeskStationPageProps) {
     const { organizationSlug, locationSlug } = await params;
     const tenant = resolveTenantContext(organizationSlug, locationSlug);
 
@@ -31,8 +31,8 @@ export default async function KitchenModulePage({
             locationName={tenant.location.name}
             locationHref={locationHref}
             locationSlug={locationSlug}
-            productionArea="kitchen"
-            stationLabel="Kitchen"
+            productionArea="front_desk"
+            stationLabel="Front Desk"
             navigationLinks={[
                 {
                     label: "Prepare Order",
