@@ -1,13 +1,21 @@
 .order-make-page {
-  min-height: 100vh;
+  height: 100vh;
+  height: 100svh;
+  height: 100dvh;
+  min-height: 100svh;
+  overflow: hidden;
   background: var(--color-background);
 }
 
 .order-make-page__shell {
   width: min(680px, 100%);
   height: 100vh;
+  height: 100svh;
+  height: 100dvh;
+  max-height: 100dvh;
   margin: 0 auto;
   padding: 0;
+  overflow: hidden;
 
   display: grid;
   grid-template-rows: auto auto minmax(0, 1fr) auto;
@@ -143,6 +151,8 @@
   min-height: 0;
   margin: 0 8px;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 
   border: 2px dotted var(--color_primary-300);
   border-radius: var(--border-radius_16);
@@ -247,7 +257,7 @@
 }
 
 .order-make-page__footer {
-  padding: 40px 28px 18px;
+  padding: 40px 28px calc(18px + env(safe-area-inset-bottom, 0px));
   background: linear-gradient(
                   to bottom,
                   var(--color-background) 0,
@@ -287,17 +297,23 @@
 
 @media (max-width: 640px) {
   .order-make-page {
-    min-height: 100vh;
+    height: 100vh;
+    height: 100svh;
+    height: 100dvh;
+    min-height: 100svh;
   }
 
   .order-make-page__shell {
     height: 100vh;
+    height: 100svh;
+    height: 100dvh;
+    max-height: 100dvh;
     padding: 0;
   }
 
   .order-make-page__header {
-    min-height: 112px;
-    padding: 22px 24px;
+    min-height: 104px;
+    padding: 18px 24px;
   }
 
   .order-make-page__title {
@@ -306,6 +322,34 @@
 
   .order-make-page__subtitle {
     font-size: 16px;
+  }
+
+  .order-make-page__groups-shell {
+    margin: 0 14px;
+  }
+
+  .order-make-page__groups-bar {
+    grid-auto-columns: 60px;
+    gap: 10px;
+    padding: 16px 0;
+  }
+
+  .order-make-page__group-button {
+    width: 60px;
+    height: 60px;
+  }
+
+  .order-make-page__menu-group-title {
+    min-height: 82px;
+    padding: 20px 28px 16px;
+  }
+
+  .order-make-page__menu-item {
+    padding: 12px 26px;
+  }
+
+  .order-make-page__footer {
+    padding: 30px 28px calc(14px + env(safe-area-inset-bottom, 0px));
   }
 
 }
