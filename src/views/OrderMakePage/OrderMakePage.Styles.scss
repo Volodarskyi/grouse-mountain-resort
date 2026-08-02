@@ -172,6 +172,10 @@
   font-size: 12px;
   font-weight: 700;
   line-height: 1.1;
+
+  span:last-child {
+    white-space: nowrap;
+  }
 }
 
 .order-make-page__group-icon {
