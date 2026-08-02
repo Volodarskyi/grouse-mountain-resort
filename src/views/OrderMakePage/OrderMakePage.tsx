@@ -164,10 +164,27 @@ export function OrderMakePage({
             return;
         }
 
+        const groupsOverlayHeight = getGroupsOverlayHeight();
+
         workArea.scrollTo({
-            top: groupElement.offsetTop - workArea.offsetTop,
+            top: Math.max(
+                groupElement.offsetTop - workArea.offsetTop - groupsOverlayHeight,
+                0,
+            ),
             behavior: "smooth",
         });
+    }
+
+    function getGroupsOverlayHeight() {
+        const groupsShell = groupsBarRef.current?.parentElement;
+
+        if (!groupsShell) {
+            return 0;
+        }
+
+        return getComputedStyle(groupsShell).position === "absolute"
+            ? groupsShell.offsetHeight
+            : 0;
     }
 
     function scrollActiveGroupButtonIntoView(groupId: string) {
@@ -192,7 +209,7 @@ export function OrderMakePage({
             return;
         }
 
-        const scrollPosition = workArea.scrollTop + 24;
+        const scrollPosition = workArea.scrollTop + getGroupsOverlayHeight() + 24;
         const currentGroup = groupedMenu.reduce<string>(
             (currentGroupId, group) => {
                 const groupElement = groupRefs.current[group.id];
