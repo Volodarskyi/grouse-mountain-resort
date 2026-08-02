@@ -612,7 +612,21 @@ export function OrderMakePage({
         <main className="order-make-page">
             <section className="order-make-page__shell">
                 <header className="order-make-page__header">
-                    <div>
+                    <Link
+                        href={locationHref}
+                        className="order-make-page__back-button"
+                        aria-label={`Back to ${locationName}`}
+                    >
+                        <Image
+                            src="/assets/icons/icon-back.svg"
+                            alt=""
+                            width={28}
+                            height={28}
+                            aria-hidden="true"
+                        />
+                    </Link>
+
+                    <div className="order-make-page__header-content">
                         <h1 className="order-make-page__title">Make Order</h1>
                         <p className="order-make-page__subtitle">
                             <Link href={organizationHref}>
@@ -622,6 +636,7 @@ export function OrderMakePage({
                             <Link href={locationHref}>{locationName}</Link>
                         </p>
                     </div>
+
                     <button
                         type="button"
                         className="order-make-page__menu-button"
