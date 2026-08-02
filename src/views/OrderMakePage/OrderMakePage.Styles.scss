@@ -23,6 +23,8 @@
 }
 
 .order-make-page__header {
+  position: relative;
+  z-index: 2;
   height: 96px;
   padding: 0 48px;
 
@@ -32,6 +34,7 @@
   gap: 16px;
 
   background: var(--color-primary);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.32);
   color: var(--color-white);
 }
 
@@ -299,14 +302,11 @@
 }
 
 .order-make-page__footer {
+  position: relative;
+  z-index: 2;
   padding: 40px 28px calc(18px + env(safe-area-inset-bottom, 0px));
-  background: linear-gradient(
-                  to bottom,
-                  var(--color-background) 0,
-                  var(--color-background) 22px,
-                  var(--color-primary) 22px,
-                  var(--color-primary) 100%
-  );
+  background: var(--color-primary);
+  box-shadow: 0 -12px 30px rgba(0, 0, 0, 0.32);
 }
 
 .order-make-page__order-button {
