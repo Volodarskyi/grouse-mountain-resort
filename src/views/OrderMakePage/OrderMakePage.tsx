@@ -164,10 +164,27 @@ export function OrderMakePage({
             return;
         }
 
+        const groupsOverlayHeight = getGroupsOverlayHeight();
+
         workArea.scrollTo({
-            top: groupElement.offsetTop - workArea.offsetTop,
+            top: Math.max(
+                groupElement.offsetTop - workArea.offsetTop - groupsOverlayHeight,
+                0,
+            ),
             behavior: "smooth",
         });
+    }
+
+    function getGroupsOverlayHeight() {
+        const groupsShell = groupsBarRef.current?.parentElement;
+
+        if (!groupsShell) {
+            return 0;
+        }
+
+        return getComputedStyle(groupsShell).position === "absolute"
+            ? groupsShell.offsetHeight
+            : 0;
     }
 
     function scrollActiveGroupButtonIntoView(groupId: string) {
@@ -192,7 +209,7 @@ export function OrderMakePage({
             return;
         }
 
-        const scrollPosition = workArea.scrollTop + 24;
+        const scrollPosition = workArea.scrollTop + getGroupsOverlayHeight() + 24;
         const currentGroup = groupedMenu.reduce<string>(
             (currentGroupId, group) => {
                 const groupElement = groupRefs.current[group.id];
@@ -612,7 +629,21 @@ export function OrderMakePage({
         <main className="order-make-page">
             <section className="order-make-page__shell">
                 <header className="order-make-page__header">
-                    <div>
+                    <Link
+                        href={locationHref}
+                        className="order-make-page__back-button"
+                        aria-label={`Back to ${locationName}`}
+                    >
+                        <Image
+                            src="/assets/icons/icon-back.svg"
+                            alt=""
+                            width={28}
+                            height={28}
+                            aria-hidden="true"
+                        />
+                    </Link>
+
+                    <div className="order-make-page__header-content">
                         <h1 className="order-make-page__title">Make Order</h1>
                         <p className="order-make-page__subtitle">
                             <Link href={organizationHref}>
@@ -622,6 +653,7 @@ export function OrderMakePage({
                             <Link href={locationHref}>{locationName}</Link>
                         </p>
                     </div>
+
                     <button
                         type="button"
                         className="order-make-page__menu-button"

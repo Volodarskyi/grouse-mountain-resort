@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -174,7 +175,21 @@ export function OrderPreparePage({
         <main className="order-prepare-page">
             <section className="order-prepare-page__shell">
                 <header className="order-prepare-page__header">
-                    <div>
+                    <Link
+                        href={locationHref}
+                        className="order-prepare-page__back-button"
+                        aria-label={`Back to ${locationName}`}
+                    >
+                        <Image
+                            src="/assets/icons/icon-back.svg"
+                            alt=""
+                            width={28}
+                            height={28}
+                            aria-hidden="true"
+                        />
+                    </Link>
+
+                    <div className="order-prepare-page__header-content">
                         <h1 className="order-prepare-page__title">
                             Prepare Order
                         </h1>
